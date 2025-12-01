@@ -211,40 +211,32 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <script>
-    /*************************************************************************
-     * 重要：下面保留你要求的“格式”示例（原样展示） -- 请勿删除（注释）
-     *
-     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCLYIk9WLiCbJhGdjnOY9WG7LlihCICwP0",
-  authDomain: "dong-624b3.firebaseapp.com",
-  databaseURL: "https://dong-624b3-default-rtdb.firebaseio.com",
-  projectId: "dong-624b3",
-  storageBucket: "dong-624b3.firebasestorage.app",
-  messagingSenderId: "785471445780",
-  appId: "1:785471445780:web:03e439a5b8bf251f254001",
-  measurementId: "G-T6BN52474N"
-};
-     *
-     * 上面是你要求“保持的格式（原样）”，下面是实际用于初始化 Firebase 的对象（请替换 YOUR_...）。
-     *
-     *************************************************************************/
+  <!-- Firebase SDK (compat for simpler single-file usage) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    // —— 将下面的占位值替换为你自己 Firebase 项目的真实值 —— //
+  <script>
+    // 你的 Firebase 配置（就是你从 Firebase 控制台复制的这一段）
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCLYIk9WLiCbJhGdjnOY9WG7LlihCICwP0",
+      authDomain: "dong-624b3.firebaseapp.com",
+      databaseURL: "https://dong-624b3-default-rtdb.firebaseio.com",
+      projectId: "dong-624b3",
+      storageBucket: "dong-624b3.firebasestorage.app",
+      messagingSenderId: "785471445780",
+      appId: "1:785471445780:web:03e439a5b8bf251f254001",
+      measurementId: "G-T6BN52474N"
     };
 
-    // 初始化 Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // 尝试初始化 Firebase，如果失败也不要影响游戏本身
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      console.log("Firebase 初始化成功");
+    } catch (e) {
+      console.error("Firebase 初始化失败：", e);
+    }
 
     // DOM 元素
     const playerNameInput = document.getElementById('playerName');
@@ -261,6 +253,7 @@ const firebaseConfig = {
     let isMuted = true;
     toggleSoundBtn.textContent = '静音';
 
+    // 登录按钮
     loginBtn.addEventListener('click', () => {
       const name = playerNameInput.value.trim();
       if(!name){
@@ -317,7 +310,6 @@ const firebaseConfig = {
     let animationId=null;
 
     function setupLevel(){
-      // 初始化挡板
       paddle = {
         width:120,
         height:12,
@@ -326,7 +318,6 @@ const firebaseConfig = {
         speed: 8
       };
 
-      // 初始化小球
       ball = {
         x: W/2,
         y: H/2,
@@ -335,7 +326,6 @@ const firebaseConfig = {
         vy: -4
       };
 
-      // 生成砖块
       bricks = [];
       const rows = 5;
       const cols = 9;
@@ -365,30 +355,25 @@ const firebaseConfig = {
     }
 
     function draw(){
-      // 背景渐变（已经由 CSS 管理 canvas 背景，但这里绘制简洁网格）
       ctx.clearRect(0,0,W,H);
 
-      // 绘制砖块
       bricks.forEach(b=>{
         if(!b.alive) return;
         ctx.fillStyle = b.color;
         roundRect(ctx, b.x, b.y, b.w, b.h, 6);
-        // 高光
         ctx.fillStyle = 'rgba(255,255,255,0.06)';
         ctx.fillRect(b.x+6, b.y+4, b.w-12, 3);
       });
 
-      // 绘制挡板
       ctx.fillStyle = 'rgba(255,255,255,0.14)';
       roundRect(ctx, paddle.x, paddle.y, paddle.width, paddle.height, 8);
-      // 绘制球
+
       ctx.beginPath();
       ctx.fillStyle = '#ffffff';
       ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
       ctx.fill();
       ctx.closePath();
 
-      // 小分割线
       ctx.fillStyle = 'rgba(255,255,255,0.02)';
       ctx.fillRect(0, H-2, W, 2);
     }
@@ -416,7 +401,6 @@ const firebaseConfig = {
       ball.x += ball.vx;
       ball.y += ball.vy;
 
-      // 碰左右墙
       if(ball.x - ball.r < 0){
         ball.x = ball.r;
         ball.vx *= -1;
@@ -427,24 +411,20 @@ const firebaseConfig = {
         playBeep();
       }
 
-      // 碰顶部
       if(ball.y - ball.r < 0){
         ball.y = ball.r;
         ball.vy *= -1;
         playBeep();
       }
 
-      // 碰挡板
       if(ball.y + ball.r > paddle.y && ball.y + ball.r < paddle.y + paddle.height + 6 &&
          ball.x > paddle.x && ball.x < paddle.x + paddle.width){
-        // 计算反弹角度：越靠边角速度越大
         const hitPos = (ball.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
-        ball.vx += hitPos * 1.6; // give some x boost
-        ball.vy = -Math.abs(ball.vy) - 0.2; // ensure upward and slight increase
+        ball.vx += hitPos * 1.6;
+        ball.vy = -Math.abs(ball.vy) - 0.2;
         playBeep();
       }
 
-      // 碰砖
       bricks.forEach(b=>{
         if(!b.alive) return;
         if(ball.x + ball.r > b.x && ball.x - ball.r < b.x + b.w &&
@@ -457,7 +437,6 @@ const firebaseConfig = {
         }
       });
 
-      // 球掉落
       if(ball.y - ball.r > H){
         lives -= 1;
         livesEl.textContent = lives;
@@ -466,7 +445,6 @@ const firebaseConfig = {
           endGame(false);
           return;
         } else {
-          // 重置球和挡板位置
           paddle.x = (W - paddle.width)/2;
           ball.x = W/2; ball.y = H/2;
           ball.vx = 4 * (Math.random() > 0.5 ? 1 : -1);
@@ -474,7 +452,6 @@ const firebaseConfig = {
         }
       }
 
-      // 胜利判定
       const remaining = bricks.filter(b=>b.alive).length;
       if(remaining === 0){
         endGame(true);
@@ -490,11 +467,11 @@ const firebaseConfig = {
 
     function startGame(){
       if(isRunning) return;
-      isRunning = true;
-      // 如果没有登录也不允许
       if(!playerName){
-        alert('请先登录姓名再开始。'); isRunning=false; return;
+        alert('请先登录姓名再开始。'); 
+        return;
       }
+      isRunning = true;
       if(animationId) cancelAnimationFrame(animationId);
       animationId = requestAnimationFrame(gameLoop);
     }
@@ -516,27 +493,21 @@ const firebaseConfig = {
       isRunning = false;
       if(animationId) cancelAnimationFrame(animationId);
       const msg = won ? ('恭喜你获胜！得分：' + currentScore) : ('游戏结束！得分：' + currentScore);
-      // 自动保存成绩（若登录）
       if(playerName){
         pushScoreToFirebase(currentScore, won);
       }
-      // 显示提示并允许重启
       setTimeout(()=> {
         if(confirm(msg + '\n是否重新开始？')){
           resetGame(true);
           startGame();
-        } else {
-          // 停止不动
         }
       }, 120);
     }
 
-    // 声音（非常简洁的 beep）
     function playBeep(){ if(isMuted) return; tinyOsc(220,0.06); }
     function playPop(){ if(isMuted) return; tinyOsc(440,0.06); }
     function playLose(){ if(isMuted) return; tinyOsc(120,0.12); }
 
-    // 极简 WebAudio 作用器
     let audioCtx = null;
     function tinyOsc(freq, dur){
       try {
@@ -552,7 +523,6 @@ const firebaseConfig = {
       } catch(e){}
     }
 
-    // 键盘事件
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'ArrowLeft') leftPressed = true;
       if(e.key === 'ArrowRight') rightPressed = true;
@@ -566,16 +536,22 @@ const firebaseConfig = {
       if(e.key === 'ArrowRight') rightPressed = false;
     });
 
-    // 初始化一次
     resetGame(true);
     draw();
 
     /*****************************
      * Firebase 排行榜读写
      *****************************/
-    // 保存成绩到 Firebase Realtime Database
     function pushScoreToFirebase(score, won){
       if(!playerName) return;
+
+      // 如果 Firebase 没有初始化成功，只做本地保存
+      if(!db){
+        console.warn("未连接 Firebase，成绩只保存在本地");
+        saveLocalBest(score);
+        return;
+      }
+
       const scoresRef = db.ref('scores');
       const newScoreRef = scoresRef.push();
       const payload = {
@@ -586,7 +562,6 @@ const firebaseConfig = {
       };
       newScoreRef.set(payload).then(()=>{
         console.log('成绩上传完成', payload);
-        // 保存本地历史
         saveLocalBest(score);
       }).catch(err=>{
         console.error('上传成绩失败', err);
@@ -594,15 +569,18 @@ const firebaseConfig = {
       });
     }
 
-    // 从 Firebase 获取实时前十名（降序）
     function subscribeLeaderboard(){
+      if(!db){
+        leaderboardList.innerHTML = '<li class="muted">未连接到 Firebase，无法加载排行榜。</li>';
+        return;
+      }
+
       const scoresRef = db.ref('scores').orderByChild('score').limitToLast(10);
       scoresRef.on('value', snapshot=>{
         const items = [];
         snapshot.forEach(child => {
           items.push({ id: child.key, ...child.val() });
         });
-        // limitToLast 返回升序（从小到大），我们需要降序
         items.sort((a,b)=>b.score - a.score);
         renderLeaderboard(items);
       }, err=>{
@@ -628,7 +606,6 @@ const firebaseConfig = {
       });
     }
 
-    // 防 XSS 的小工具
     function escapeHtml(s){
       if(!s) return '';
       return s.replace(/[&<>"'\/]/g, function (c) {
@@ -636,10 +613,6 @@ const firebaseConfig = {
       });
     }
 
-    // 订阅排行榜
-    subscribeLeaderboard();
-
-    // 存储本地最优以作参考（并非必须）
     function saveLocalBest(score){
       try {
         const key = 'brick_best';
@@ -648,26 +621,9 @@ const firebaseConfig = {
       } catch(e){}
     }
 
-    /*****************************
-     * 适配窗口大小（如果 canvas CSS 大小改变）
-     *****************************/
-    window.addEventListener('resize', ()=> {
-      // 这里我们保持 canvas 固定内部像素（680x480）以保持物理比例
-    });
-
-    /*****************************
-     * 额外：如果要在页面加载时展示本地记录
-     *****************************/
-    try {
-      const localBest = localStorage.getItem('brick_best');
-      if(localBest) {
-        const li = document.createElement('li');
-        li.className = 'muted';
-        li.textContent = '本地最高分：' + localBest;
-        leaderboardList.insertBefore(li, leaderboardList.firstChild);
-      }
-    } catch(e){}
-
+    subscribeLeaderboard();
   </script>
+
 </body>
 </html>
+
