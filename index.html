@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>破砖游戏（带 Firebase 排行榜）</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#7c3aed;
+      --muted:#94a3b8;
+      --glass: rgba(255,255,255,0.03);
+      --glass-2: rgba(255,255,255,0.02);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent),
+                  radial-gradient(900px 400px at 90% 90%, rgba(14,165,233,0.06), transparent),
+                  var(--bg);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .container{
+      width:1100px;
+      max-width:100%;
+      display:grid;
+      grid-template-columns: 680px 1fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:18px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .left{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:48px;height:48px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),#06b6d4);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:18px;color:white;
+      box-shadow: 0 6px 18px rgba(124,58,237,0.18);
+    }
+    h1{font-size:18px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-top:6px;
+    }
+    input[type="text"]{
+      padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);
+      background:var(--glass); color: #e6eef8; outline:none;
+      min-width:220px;
+      font-size:14px;
+    }
+    button{
+      padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#06b6d4);
+      color:white;font-weight:600;cursor:pointer;
+      box-shadow: 0 8px 20px rgba(7,89,133,0.12);
+    }
+    button.secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);
+    }
+
+    /* Game canvas card */
+    .game-card{
+      padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      display:flex;flex-direction:column;align-items:center;gap:12px;
+    }
+    #gameCanvas{
+      background: linear-gradient(180deg,#071025 0%, #071428 60%);
+      border-radius:10px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 2px 10px rgba(255,255,255,0.02);
+      width:100%; height:480px; display:block;
+    }
+
+    .hud{
+      width:100%;display:flex;justify-content:space-between;align-items:center;
+      font-size:14px;color:var(--muted);
+    }
+    .score{
+      font-weight:700;color:#fff;
+    }
+
+    /* Right column - leaderboard */
+    .right{
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .leaderboard{
+      padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.008));
+    }
+    .leaderboard h3{margin:0 0 6px 0}
+    ol{margin:6px 0;padding:0 10px}
+    li{
+      list-style:none;display:flex;justify-content:space-between;align-items:center;
+      padding:8px;border-radius:8px;margin-bottom:6px;background:var(--glass-2);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .muted{color:var(--muted);font-size:13px}
+
+    .help{font-size:13px;color:var(--muted);margin-top:6px}
+
+    .footer{
+      font-size:12px;color:var(--muted);text-align:center;padding-top:8px;
+    }
+
+    /* Responsive */
+    @media (max-width:1024px){
+      .container{grid-template-columns:1fr; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel left">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">砖</div>
+          <div>
+            <h1>破砖大作战</h1>
+            <p class="lead">用键盘左右箭头移动挡板，打破所有砖块赢得胜利。成绩会实时保存到 Firebase 排行榜（前十名）。</p>
+          </div>
+        </div>
+        <div class="muted">按 ← / → 控制  •  空格开始/重置</div>
+      </div>
+
+      <div class="controls" style="margin-top:12px;">
+        <input id="playerName" type="text" placeholder="输入你的姓名（必填）" maxlength="20" />
+        <button id="loginBtn">登录并准备</button>
+        <button id="startBtn" class="secondary">开始游戏</button>
+        <button id="resetBtn" class="secondary">重置分数（仅本地）</button>
+      </div>
+
+      <div class="game-card panel" style="margin-top:4px;">
+        <div class="hud">
+          <div class="score">分数: <span id="score">0</span></div>
+          <div class="muted">生命: <span id="lives">3</span></div>
+        </div>
+        <canvas id="gameCanvas" width="680" height="480"></canvas>
+        <div style="width:100%;display:flex;gap:8px;justify-content:space-between;align-items:center;">
+          <div class="help">当你破坏所有砖块时获胜。游戏会在本地保存本次成绩并上传至 Firebase。</div>
+          <div style="display:flex;gap:8px;">
+            <button id="saveScoreBtn" class="secondary" title="手动保存成绩">保存成绩</button>
+            <button id="toggleSoundBtn" class="secondary">静音</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer muted" style="margin-top:10px;">
+        说明：此页面包含 Firebase 实时数据库读写示例。请将 firebaseConfig 内的占位符替换为你自己的项目配置。
+      </div>
+    </div>
+
+    <div class="panel right">
+      <div class="leaderboard">
+        <h3>实时前十名排行榜</h3>
+        <ol id="leaderboardList">
+          <li class="muted">正在加载排行榜…</li>
+        </ol>
+        <div class="muted" style="font-size:13px;margin-top:8px">最新成绩会实时更新到本列表。</div>
+      </div>
+
+      <div class="panel" style="margin-top:12px;">
+        <h3>操作提示</h3>
+        <ul style="padding-left:18px;color:var(--muted);line-height:1.8">
+          <li>登录后按 <strong>开始游戏</strong> 或 空格 开始。</li>
+          <li>左右箭头移动挡板。</li>
+          <li>击碎所有砖块获胜；若球掉落直到生命耗尽则为失败。</li>
+          <li>胜利或失败后可保存分数到 Firebase（自动或手动保存）。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (compat for simpler single-file usage) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    /*************************************************************************
+     * 重要：下面保留你要求的“格式”示例（原样展示） -- 请勿删除（注释）
+     *
+     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCLYIk9WLiCbJhGdjnOY9WG7LlihCICwP0",
+  authDomain: "dong-624b3.firebaseapp.com",
+  databaseURL: "https://dong-624b3-default-rtdb.firebaseio.com",
+  projectId: "dong-624b3",
+  storageBucket: "dong-624b3.firebasestorage.app",
+  messagingSenderId: "785471445780",
+  appId: "1:785471445780:web:03e439a5b8bf251f254001",
+  measurementId: "G-T6BN52474N"
+};
+     *
+     * 上面是你要求“保持的格式（原样）”，下面是实际用于初始化 Firebase 的对象（请替换 YOUR_...）。
+     *
+     *************************************************************************/
+
+    // —— 将下面的占位值替换为你自己 Firebase 项目的真实值 —— //
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // 初始化 Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // DOM 元素
+    const playerNameInput = document.getElementById('playerName');
+    const loginBtn = document.getElementById('loginBtn');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const saveScoreBtn = document.getElementById('saveScoreBtn');
+    const toggleSoundBtn = document.getElementById('toggleSoundBtn');
+    const leaderboardList = document.getElementById('leaderboardList');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+
+    let playerName = null;
+    let isMuted = true;
+    toggleSoundBtn.textContent = '静音';
+
+    loginBtn.addEventListener('click', () => {
+      const name = playerNameInput.value.trim();
+      if(!name){
+        alert('请输入你的姓名再登录。');
+        return;
+      }
+      playerName = name;
+      loginBtn.textContent = '已登录：' + playerName;
+      playerNameInput.disabled = true;
+      loginBtn.disabled = true;
+    });
+
+    startBtn.addEventListener('click', () => {
+      if(!playerName){
+        alert('请先输入姓名并登录。');
+        return;
+      }
+      resetGame();
+      startGame();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if(confirm('确定重置本地分数并重新开始吗？（不会影响 Firebase）')){
+        resetGame(true);
+      }
+    });
+
+    saveScoreBtn.addEventListener('click', () => {
+      if(!playerName){
+        alert('请先登录后再保存成绩。'); return;
+      }
+      pushScoreToFirebase(currentScore);
+    });
+
+    toggleSoundBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      toggleSoundBtn.textContent = isMuted ? '静音' : '开声';
+    });
+
+    /***********************
+     * 游戏逻辑（简洁版）
+     ***********************/
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width;
+    let H = canvas.height;
+
+    // 游戏状态
+    let paddle, ball, bricks;
+    let leftPressed=false, rightPressed=false;
+    let currentScore=0;
+    let lives=3;
+    let isRunning=false;
+    let animationId=null;
+
+    function setupLevel(){
+      // 初始化挡板
+      paddle = {
+        width:120,
+        height:12,
+        x: (W - 120)/2,
+        y: H - 40,
+        speed: 8
+      };
+
+      // 初始化小球
+      ball = {
+        x: W/2,
+        y: H/2,
+        r: 8,
+        vx: 4 * (Math.random() > 0.5 ? 1 : -1),
+        vy: -4
+      };
+
+      // 生成砖块
+      bricks = [];
+      const rows = 5;
+      const cols = 9;
+      const brickW = Math.floor((W - 80) / cols);
+      const brickH = 18;
+      const offsetX = 40;
+      const offsetY = 60;
+      const padding = 6;
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const b = {
+            x: offsetX + c*(brickW+padding),
+            y: offsetY + r*(brickH+padding),
+            w: brickW,
+            h: brickH,
+            alive: true,
+            color: getBrickColor(r)
+          };
+          bricks.push(b);
+        }
+      }
+    }
+
+    function getBrickColor(row){
+      const colors = ['#ff7b7b','#ffbf7b','#fff27b','#7bff9a','#7bdfff'];
+      return colors[row % colors.length];
+    }
+
+    function draw(){
+      // 背景渐变（已经由 CSS 管理 canvas 背景，但这里绘制简洁网格）
+      ctx.clearRect(0,0,W,H);
+
+      // 绘制砖块
+      bricks.forEach(b=>{
+        if(!b.alive) return;
+        ctx.fillStyle = b.color;
+        roundRect(ctx, b.x, b.y, b.w, b.h, 6);
+        // 高光
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(b.x+6, b.y+4, b.w-12, 3);
+      });
+
+      // 绘制挡板
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      roundRect(ctx, paddle.x, paddle.y, paddle.width, paddle.height, 8);
+      // 绘制球
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.closePath();
+
+      // 小分割线
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.fillRect(0, H-2, W, 2);
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.arcTo(x+w, y, x+w, y+h, r);
+      ctx.arcTo(x+w, y+h, x, y+h, r);
+      ctx.arcTo(x, y+h, x, y, r);
+      ctx.arcTo(x, y, x+w, y, r);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function update(){
+      if(leftPressed){
+        paddle.x -= paddle.speed;
+        if(paddle.x < 4) paddle.x = 4;
+      } else if(rightPressed){
+        paddle.x += paddle.speed;
+        if(paddle.x + paddle.width > W-4) paddle.x = W - paddle.width - 4;
+      }
+
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      // 碰左右墙
+      if(ball.x - ball.r < 0){
+        ball.x = ball.r;
+        ball.vx *= -1;
+        playBeep();
+      } else if(ball.x + ball.r > W){
+        ball.x = W - ball.r;
+        ball.vx *= -1;
+        playBeep();
+      }
+
+      // 碰顶部
+      if(ball.y - ball.r < 0){
+        ball.y = ball.r;
+        ball.vy *= -1;
+        playBeep();
+      }
+
+      // 碰挡板
+      if(ball.y + ball.r > paddle.y && ball.y + ball.r < paddle.y + paddle.height + 6 &&
+         ball.x > paddle.x && ball.x < paddle.x + paddle.width){
+        // 计算反弹角度：越靠边角速度越大
+        const hitPos = (ball.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
+        ball.vx += hitPos * 1.6; // give some x boost
+        ball.vy = -Math.abs(ball.vy) - 0.2; // ensure upward and slight increase
+        playBeep();
+      }
+
+      // 碰砖
+      bricks.forEach(b=>{
+        if(!b.alive) return;
+        if(ball.x + ball.r > b.x && ball.x - ball.r < b.x + b.w &&
+           ball.y + ball.r > b.y && ball.y - ball.r < b.y + b.h){
+          b.alive = false;
+          currentScore += 10;
+          scoreEl.textContent = currentScore;
+          ball.vy *= -1;
+          playPop();
+        }
+      });
+
+      // 球掉落
+      if(ball.y - ball.r > H){
+        lives -= 1;
+        livesEl.textContent = lives;
+        playLose();
+        if(lives <= 0){
+          endGame(false);
+          return;
+        } else {
+          // 重置球和挡板位置
+          paddle.x = (W - paddle.width)/2;
+          ball.x = W/2; ball.y = H/2;
+          ball.vx = 4 * (Math.random() > 0.5 ? 1 : -1);
+          ball.vy = -4;
+        }
+      }
+
+      // 胜利判定
+      const remaining = bricks.filter(b=>b.alive).length;
+      if(remaining === 0){
+        endGame(true);
+        return;
+      }
+    }
+
+    function gameLoop(){
+      update();
+      draw();
+      if(isRunning) animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame(){
+      if(isRunning) return;
+      isRunning = true;
+      // 如果没有登录也不允许
+      if(!playerName){
+        alert('请先登录姓名再开始。'); isRunning=false; return;
+      }
+      if(animationId) cancelAnimationFrame(animationId);
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function resetGame(restart=false){
+      currentScore = 0;
+      lives = 3;
+      scoreEl.textContent = currentScore;
+      livesEl.textContent = lives;
+      setupLevel();
+      if(restart){
+        isRunning = false;
+        if(animationId) cancelAnimationFrame(animationId);
+        draw();
+      }
+    }
+
+    function endGame(won){
+      isRunning = false;
+      if(animationId) cancelAnimationFrame(animationId);
+      const msg = won ? ('恭喜你获胜！得分：' + currentScore) : ('游戏结束！得分：' + currentScore);
+      // 自动保存成绩（若登录）
+      if(playerName){
+        pushScoreToFirebase(currentScore, won);
+      }
+      // 显示提示并允许重启
+      setTimeout(()=> {
+        if(confirm(msg + '\n是否重新开始？')){
+          resetGame(true);
+          startGame();
+        } else {
+          // 停止不动
+        }
+      }, 120);
+    }
+
+    // 声音（非常简洁的 beep）
+    function playBeep(){ if(isMuted) return; tinyOsc(220,0.06); }
+    function playPop(){ if(isMuted) return; tinyOsc(440,0.06); }
+    function playLose(){ if(isMuted) return; tinyOsc(120,0.12); }
+
+    // 极简 WebAudio 作用器
+    let audioCtx = null;
+    function tinyOsc(freq, dur){
+      try {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = freq;
+        g.gain.value = 0.02;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start();
+        setTimeout(()=> { o.stop(); }, dur*1000);
+      } catch(e){}
+    }
+
+    // 键盘事件
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowLeft') leftPressed = true;
+      if(e.key === 'ArrowRight') rightPressed = true;
+      if(e.code === 'Space'){
+        if(!isRunning) startGame();
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('keyup', (e)=>{
+      if(e.key === 'ArrowLeft') leftPressed = false;
+      if(e.key === 'ArrowRight') rightPressed = false;
+    });
+
+    // 初始化一次
+    resetGame(true);
+    draw();
+
+    /*****************************
+     * Firebase 排行榜读写
+     *****************************/
+    // 保存成绩到 Firebase Realtime Database
+    function pushScoreToFirebase(score, won){
+      if(!playerName) return;
+      const scoresRef = db.ref('scores');
+      const newScoreRef = scoresRef.push();
+      const payload = {
+        name: playerName,
+        score: Number(score),
+        won: !!won,
+        ts: firebase.database.ServerValue.TIMESTAMP
+      };
+      newScoreRef.set(payload).then(()=>{
+        console.log('成绩上传完成', payload);
+        // 保存本地历史
+        saveLocalBest(score);
+      }).catch(err=>{
+        console.error('上传成绩失败', err);
+        alert('上传成绩失败：' + err.message);
+      });
+    }
+
+    // 从 Firebase 获取实时前十名（降序）
+    function subscribeLeaderboard(){
+      const scoresRef = db.ref('scores').orderByChild('score').limitToLast(10);
+      scoresRef.on('value', snapshot=>{
+        const items = [];
+        snapshot.forEach(child => {
+          items.push({ id: child.key, ...child.val() });
+        });
+        // limitToLast 返回升序（从小到大），我们需要降序
+        items.sort((a,b)=>b.score - a.score);
+        renderLeaderboard(items);
+      }, err=>{
+        console.error('排行榜监听失败', err);
+        leaderboardList.innerHTML = '<li class="muted">无法加载排行榜：' + err.message + '</li>';
+      });
+    }
+
+    function renderLeaderboard(items){
+      leaderboardList.innerHTML = '';
+      if(!items || items.length === 0){
+        leaderboardList.innerHTML = '<li class="muted">暂无成绩。</li>'; return;
+      }
+      items.forEach((it, idx)=>{
+        const li = document.createElement('li');
+        const left = document.createElement('div');
+        left.innerHTML = `<strong style="margin-right:8px">${idx+1}. ${escapeHtml(it.name)}</strong> <span class="muted">(${new Date(it.ts||Date.now()).toLocaleString()})</span>`;
+        const right = document.createElement('div');
+        right.innerHTML = `<strong style="color:#fff">${it.score}</strong>`;
+        li.appendChild(left);
+        li.appendChild(right);
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    // 防 XSS 的小工具
+    function escapeHtml(s){
+      if(!s) return '';
+      return s.replace(/[&<>"'\/]/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;'}[c];
+      });
+    }
+
+    // 订阅排行榜
+    subscribeLeaderboard();
+
+    // 存储本地最优以作参考（并非必须）
+    function saveLocalBest(score){
+      try {
+        const key = 'brick_best';
+        const prev = Number(localStorage.getItem(key) || 0);
+        if(score > prev) localStorage.setItem(key, score);
+      } catch(e){}
+    }
+
+    /*****************************
+     * 适配窗口大小（如果 canvas CSS 大小改变）
+     *****************************/
+    window.addEventListener('resize', ()=> {
+      // 这里我们保持 canvas 固定内部像素（680x480）以保持物理比例
+    });
+
+    /*****************************
+     * 额外：如果要在页面加载时展示本地记录
+     *****************************/
+    try {
+      const localBest = localStorage.getItem('brick_best');
+      if(localBest) {
+        const li = document.createElement('li');
+        li.className = 'muted';
+        li.textContent = '本地最高分：' + localBest;
+        leaderboardList.insertBefore(li, leaderboardList.firstChild);
+      }
+    } catch(e){}
+
+  </script>
+</body>
+</html>
