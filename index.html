@@ -1,1344 +1,679 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <title>小动物垃圾分类小助手</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root {
-      --bg: #f2f7ff;
-      --card: #ffffff;
-      --accent: #7cc5c5;
-      --accent-soft: #d9f3f3;
-      --text-main: #1f2933;
-      --text-soft: #6b7280;
-      --danger: #f97373;
-      --radius-lg: 18px;
-      --radius-xl: 26px;
-      --shadow-soft: 0 14px 35px rgba(15, 23, 42, 0.12);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(circle at top, #e7f4ff 0, #f9fbff 50%, #fdfdfd 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 1000px;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(14px);
-      border-radius: 26px;
-      box-shadow: var(--shadow-soft);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #7cc5c5, #9ad3b6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 8px 20px rgba(124, 197, 197, 0.5);
-    }
-
-    .logo-text-title {
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .logo-text-sub {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .nav-btn {
-      border: none;
-      outline: none;
-      background: transparent;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--text-soft);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.18s ease;
-    }
-
-    .nav-btn span {
-      font-size: 16px;
-    }
-
-    .nav-btn.active {
-      background: var(--accent-soft);
-      color: var(--text-main);
-      font-weight: 600;
-      box-shadow: 0 6px 16px rgba(148, 209, 209, 0.6);
-      transform: translateY(-1px);
-    }
-
-    main {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-soft);
-      padding: 18px 18px 20px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-title span {
-      font-size: 22px;
-    }
-
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    /* 搜索区域 */
-    .search-bar-wrap {
-      margin-top: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      position: relative;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .search-input-box {
-      position: relative;
-      flex: 1;
-    }
-
-    .search-input {
-      width: 100%;
-      border-radius: 999px;
-      border: 1px solid #dde5f1;
-      padding: 10px 14px 10px 38px;
-      font-size: 14px;
-      outline: none;
-      background: #f9fbff;
-      transition: all 0.18s ease;
-    }
-
-    .search-input:focus {
-      border-color: #9ad3b6;
-      box-shadow: 0 0 0 1px rgba(154, 211, 182, 0.5);
-      background: #ffffff;
-    }
-
-    .search-input-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      opacity: 0.8;
-    }
-
-    .search-btn {
-      border-radius: 999px;
-      border: none;
-      outline: none;
-      padding: 9px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      background: linear-gradient(135deg, #7cc5c5, #8fd6b3);
-      color: #ffffff;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 10px 24px rgba(124, 197, 197, 0.8);
-      transition: all 0.18s ease;
-      white-space: nowrap;
-    }
-
-    .search-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(124, 197, 197, 0.9);
-    }
-
-    .search-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 16px rgba(124, 197, 197, 0.7);
-    }
-
-    /* 自动补全下拉 */
-    .suggestion-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      margin-top: 4px;
-      background: #ffffff;
-      border-radius: 14px;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-      list-style: none;
-      padding: 6px 0;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 20;
-    }
-
-    .suggestion-item {
-      padding: 6px 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background 0.15s ease;
-    }
-
-    .suggestion-item:hover {
-      background: #f3f7ff;
-    }
-
-    .suggestion-icon {
-      font-size: 18px;
-    }
-
-    /* 搜索结果 */
-    .result-area {
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: #f5fbff;
-      border-radius: 18px;
-      border: 1px dashed #d0e5ff;
-      min-height: 56px;
-    }
-
-    .result-empty {
-      color: var(--text-soft);
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .result-card {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .result-main-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .result-icon {
-      font-size: 26px;
-    }
-
-    .result-name {
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .badge {
-      font-size: 12px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-
-    .badge-danger {
-      background: #ffe4e4;
-    }
-
-    .badge-danger .badge-dot {
-      background: var(--danger);
-    }
-
-    .result-reason {
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.5;
-    }
-
-    .result-tip {
-      font-size: 12px;
-      color: #9ca3af;
-    }
-
-    /* 小统计 */
-    .stats-row {
-      margin-top: 10px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .stat-pill {
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #eef4ff;
-    }
-
-    /* 游戏区 */
-    .hidden {
-      display: none !important;
-    }
-
-    #game-section .game-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
-      gap: 16px;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 780px) {
-      #game-section .game-layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .game-status-card {
-      background: #f8fbff;
-      border-radius: 18px;
-      padding: 12px 14px;
-      border: 1px dashed #d0e5ff;
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .game-status-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .status-tag {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: #eef4ff;
-      font-size: 12px;
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .status-tag strong {
-      color: var(--text-main);
-    }
-
-    .game-area {
-      background: #f8fffb;
-      border-radius: 18px;
-      padding: 12px 14px 16px;
-      border: 1px solid #d7f3df;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .game-subtitle {
-      font-size: 13px;
-      color: var(--text-soft);
-      margin-bottom: 6px;
-    }
-
-    .game-trash-item {
-      width: 160px;
-      padding: 10px 12px;
-      margin: 6px auto 10px;
-      border-radius: 999px;
-      background: #ffffff;
-      box-shadow: 0 10px 24px rgba(148, 209, 188, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 15px;
-      cursor: grab;
-      user-select: none;
-    }
-
-    .game-trash-item span.icon {
-      font-size: 26px;
-    }
-
-    .game-trash-label {
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .bins-grid {
-      margin-top: 10px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .bin {
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 10px 10px;
-      border: 1px solid #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.16s ease;
-      min-height: 64px;
-      overflow: hidden;
-    }
-
-    .bin:hover {
-      border-color: #9ad3b6;
-      box-shadow: 0 10px 22px rgba(148, 209, 188, 0.6);
-      transform: translateY(-1px);
-    }
-
-    .bin-label-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .bin-emoji {
-      font-size: 18px;
-    }
-
-    .bin-title {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .bin-desc {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .bin-drop-hint {
-      position: absolute;
-      bottom: 6px;
-      right: 8px;
-      font-size: 10px;
-      color: #d1d5db;
-    }
-
-    .game-feedback {
-      margin-top: 8px;
-      font-size: 13px;
-    }
-
-    .game-feedback.correct {
-      color: #059669;
-    }
-
-    .game-feedback.wrong {
-      color: #dc2626;
-    }
-
-    .game-btn-row {
-      margin-top: 8px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn-outline {
-      border-radius: 999px;
-      border: 1px solid #c7e1d8;
-      padding: 6px 12px;
-      font-size: 12px;
-      background: #ffffff;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #4b5563;
-      transition: all 0.15s ease;
-    }
-
-    .btn-outline:hover {
-      background: #e5f6f1;
-    }
-
-    .btn-outline-danger {
-      border-color: #fecaca;
-    }
-
-    .btn-outline-danger:hover {
-      background: #fee2e2;
-    }
-
-    /* 关于项目 */
-    .about-text {
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.6;
-    }
-
-    .about-highlight {
-      padding: 6px 10px;
-      border-radius: 12px;
-      background: #f1f5f9;
-      margin-top: 8px;
-      font-size: 12px;
-    }
-
-    footer {
-      font-size: 11px;
-      color: #9ca3af;
-      text-align: center;
-      padding: 4px 6px;
-    }
-
-    footer span {
-      opacity: 0.9;
-    }
-  </style>
+<meta charset="utf-8" />
+<title>生活垃圾分类助手</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:#f5f7fc;
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  color:#333;
+}
+
+/* ========== 顶部 Header 风格 ========== */
+.top-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 28px;
+  background:#ffffff;
+  box-shadow:0 2px 20px rgba(0,0,0,0.05);
+  position:sticky; top:0; z-index:100;
+}
+.logo-wrap{display:flex;align-items:center;gap:10px;}
+.logo-icon{font-size:30px;}
+.logo-title{font-size:20px;font-weight:700;}
+.logo-subtitle{font-size:13px;opacity:0.75;}
+
+.lang-toggle{display:flex;align-items:center;gap:6px;font-size:14px;}
+.lang-btn{
+  border:none;background:transparent;
+  padding:5px 10px;border-radius:999px;
+  cursor:pointer;transition:.18s;
+}
+.lang-btn.active{background:#e3efff;color:#2b5dba;}
+.lang-btn:hover{background:#edf3ff;}
+
+/* ========== 页面布局 ========== */
+.page-wrap{
+  max-width:960px;margin:24px auto 32px;padding:0 16px;
+}
+
+/* 顶部标签导航 */
+.tab-nav{
+  display:flex;background:#fff;border-radius:999px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.05);
+  padding:4px;margin-bottom:20px;
+}
+.tab-btn{
+  flex:1;border:none;background:transparent;
+  border-radius:999px;padding:10px 12px;
+  font-size:14px;cursor:pointer;color:#627196;
+  transition:.2s;
+}
+.tab-btn.active{
+  background:#e3efff;color:#1f4c9a;font-weight:600;
+}
+
+/* 通用卡片 */
+.card{
+  background:#fff;border-radius:18px;
+  box-shadow:0 10px 30px rgba(15,23,42,0.06);
+  padding:22px 24px;margin-bottom:22px;
+}
+.card-title{
+  font-size:18px;display:flex;align-items:center;
+  gap:8px;font-weight:700;
+}
+.card-subtitle{font-size:14px;opacity:0.75;}
+
+/* ========== 搜索区 ========== */
+.search-row{
+  display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;
+}
+.search-input-box{position:relative;flex:1;max-width:540px;}
+.search-input{
+  width:100%;padding:14px 18px 14px 46px;
+  border-radius:999px;border:none;background:#ffffff;
+  box-shadow:0 6px 20px rgba(15,23,42,0.08);
+  font-size:15px;transition:.2s;
+}
+.search-input:focus{
+  outline:none;box-shadow:0 10px 28px rgba(15,23,42,0.12);
+  transform:translateY(-1px);
+}
+.search-input-icon{
+  position:absolute;left:16px;top:11px;font-size:18px;opacity:.6;
+}
+
+.search-btn{
+  border:none;border-radius:999px;padding:12px 24px;
+  font-size:14px;
+  background:linear-gradient(135deg,#9ec9ff,#6fa8ff);
+  color:#fff;cursor:pointer;
+  box-shadow:0 8px 20px rgba(111,168,255,0.35);
+  transition:.18s;white-space:nowrap;
+}
+.search-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(111,168,255,0.45);
+}
+
+/* 自动补全 */
+.suggestion-list{
+  position:absolute;top:54px;width:100%;
+  background:#fff;border-radius:14px;
+  box-shadow:0 12px 30px rgba(15,23,42,0.14);
+  border:1px solid #e5edff;list-style:none;
+  padding:8px 0;margin:0;z-index:20;
+}
+.suggestion-list li{
+  padding:8px 14px;font-size:14px;cursor:pointer;
+}
+.suggestion-list li:hover{background:#f1f5ff;}
+
+.result-area{
+  margin-top:20px;padding:14px 16px;border-radius:16px;
+  background:#f7f9ff;border:1px solid #e2e9ff;min-height:40px;
+}
+.result-title{font-size:16px;font-weight:600;margin-bottom:4px;}
+.result-meta{font-size:14px;opacity:.85;}
+
+.stat-pill{
+  display:inline-block;padding:6px 12px;border-radius:999px;
+  background:#eaf2ff;color:#2b4f9b;font-size:13px;
+}
+
+/* ========== 分类练习布局 ========== */
+.game-layout{
+  display:flex;flex-wrap:wrap;gap:18px;
+}
+.game-status-card{
+  width:250px;border-radius:16px;background:#f3f6ff;
+  padding:14px;box-shadow:0 8px 24px rgba(15,23,42,0.06);
+}
+.game-intro-list{margin:8px 0 10px 18px;font-size:14px;}
+
+.status-tag{
+  font-size:13px;border-radius:999px;padding:5px 10px;
+  background:#e2ebff;color:#27488f;
+}
+.badge-pulse{
+  animation:badgePulse .3s ease-out;
+}
+@keyframes badgePulse{
+  0%{transform:scale(1);}
+  30%{transform:scale(1.06);}
+ 100%{transform:scale(1);}
+}
+
+.game-btn-row{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.btn-outline{
+  border-radius:10px;border:1px solid #9ec1ff;background:#fff;
+  padding:7px 8px;font-size:14px;cursor:pointer;
+}
+.btn-outline-danger{border-color:#ff8b8b;}
+
+.game-area{flex:1;min-width:260px;}
+.game-trash-item{
+  margin-top:10px;display:inline-block;padding:12px 16px;
+  border-radius:999px;background:#eef3ff;font-size:16px;
+  box-shadow:0 6px 14px rgba(15,23,42,0.08);
+}
+.bins-grid{
+  margin-top:14px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+}
+.bin{
+  border-radius:14px;padding:10px 12px;
+  border:1px solid #dde5ff;background:#fff;
+  font-size:14px;cursor:pointer;text-align:left;
+  transition:.18s;
+}
+.bin:hover{background:#edf3ff;border-color:#c0d2ff;}
+
+.game-feedback{margin-top:16px;min-height:22px;font-size:14px;}
+.feedback-correct{
+  color:#1f8a4d;animation:feedbackPop .35s ease-out;
+}
+.feedback-wrong{
+  color:#d04545;animation:feedbackShake .3s ease-out;
+}
+@keyframes feedbackPop{
+  0%{transform:scale(.95);opacity:0;}
+ 100%{transform:scale(1);opacity:1;}
+}
+@keyframes feedbackShake{
+  0%{transform:translateX(0);}
+ 25%{transform:translateX(-3px);}
+ 50%{transform:translateX(3px);}
+ 75%{transform:translateX(-2px);}
+ 100%{transform:translateX(0);}
+}
+.game-end{
+  animation:endPop .5s ease-out;
+}
+@keyframes endPop{
+  0%{transform:scale(.92);opacity:0;}
+ 100%{transform:scale(1);opacity:1;}
+}
+
+/* 关于网页 */
+.guide-list{padding-left:18px;margin-top:6px;}
+
+/* 自适应 */
+@media(max-width:800px){
+  .search-row{flex-direction:column;align-items:stretch;}
+  .search-btn{align-self:flex-start;}
+
+  .game-layout{flex-direction:column;}
+  .game-status-card{width:100%;}
+  .tab-nav{flex-direction:column;border-radius:16px;}
+}
+.hidden{display:none!important;}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <!-- 顶部导航 -->
-    <header>
-      <div class="logo-wrap">
-        <div class="logo-icon">🐼</div>
-        <div>
-          <div class="logo-text-title">小动物垃圾分类小助手</div>
-          <div class="logo-text-sub">和小熊猫一起学分类，让地球轻一点 💚</div>
-        </div>
-      </div>
-      <nav>
-        <button class="nav-btn active" data-target="search-section">
-          <span>🔍</span> 查询分类
-        </button>
-        <button class="nav-btn" data-target="game-section">
-          <span>🎮</span> 分类小游戏
-        </button>
-        <button class="nav-btn" data-target="about-section">
-          <span>🌱</span> 关于项目
-        </button>
-      </nav>
-    </header>
 
-    <main>
-      <!-- 搜索区 -->
-      <section id="search-section" class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">
-              <span>🔍</span> 垃圾分类查询
-            </div>
-            <div class="card-subtitle">
-              输入生活中的垃圾名称，小动物帮你快速找到属于哪一类～
-            </div>
-          </div>
-        </div>
-
-        <div class="search-bar-wrap">
-          <div class="search-row">
-            <div class="search-input-box">
-              <span class="search-input-icon">🍃</span>
-              <input
-                type="text"
-                id="searchInput"
-                class="search-input"
-                placeholder="例如：香蕉皮、牛奶盒、充电电池…"
-                autocomplete="off"
-              />
-              <ul id="suggestionList" class="suggestion-list hidden"></ul>
-            </div>
-            <button class="search-btn" id="searchBtn">
-              搜索一下
-            </button>
-          </div>
-        </div>
-
-        <div class="result-area" id="resultArea">
-          <div class="result-empty">
-            <span>🐰</span>
-            Tips：先在上面输入一个垃圾名称吧，小兔子帮你找分类～
-          </div>
-        </div>
-
-        <div class="stats-row">
-          <div class="stat-pill" id="statSearchCount">今日查询：0 次</div>
-          <div class="stat-pill">支持分类：4 大类</div>
-          <div class="stat-pill">你也可以继续补充更多垃圾条目</div>
-        </div>
-      </section>
-
-      <!-- 游戏区 -->
-      <section id="game-section" class="card hidden">
-        <div class="card-header">
-          <div>
-            <div class="card-title">
-              <span>🎮</span> 垃圾分类小游戏
-            </div>
-            <div class="card-subtitle">
-              拖动或点击，把垃圾放进正确的垃圾桶，跟小动物一起做环保小达人！
-            </div>
-          </div>
-        </div>
-
-        <div class="game-layout">
-          <div class="game-status-card">
-            <div>游戏说明：</div>
-            <ul style="margin: 6px 0 4px 16px; padding: 0; font-size: 12px;">
-              <li>看上方出现的垃圾名称和小图标</li>
-              <li>可以把它拖到对应类别的垃圾桶上</li>
-              <li>或直接点击你认为正确的垃圾桶</li>
-              <li>答对加分，答错会扣“爱心”哦～</li>
-            </ul>
-            <div class="game-status-row">
-              <div class="status-tag">
-                分数：<strong id="gameScore">0</strong>
-              </div>
-              <div class="status-tag">
-                题目：<strong id="gameRound">0</strong> / 20
-              </div>
-              <div class="status-tag">
-                爱心：<strong id="gameLives">5</strong> ❤️
-              </div>
-            </div>
-            <div class="game-btn-row">
-              <button class="btn-outline" id="btnStartGame">开始新游戏</button>
-              <button class="btn-outline" id="btnSkip">跳过这一题</button>
-              <button class="btn-outline-danger" id="btnReveal">
-                看答案（本题）
-              </button>
-            </div>
-          </div>
-
-          <div class="game-area">
-            <div class="game-subtitle">当前垃圾：</div>
-            <div
-              class="game-trash-item"
-              id="gameTrashItem"
-              draggable="true"
-            >
-              <span class="icon">🍀</span>
-              <span class="name" id="gameTrashName">点击「开始新游戏」试试吧</span>
-            </div>
-            <div class="game-trash-label">
-              提示：用鼠标拖到垃圾桶里，或直接点击垃圾桶作答。
-            </div>
-            <div class="bins-grid">
-              <div
-                class="bin"
-                data-category="可回收物"
-              >
-                <div class="bin-label-row">
-                  <span class="bin-emoji">♻️</span>
-                  <span class="bin-title">可回收物</span>
-                </div>
-                <div class="bin-desc">纸类、金属、塑料、玻璃等可以再利用的东西</div>
-                <div class="bin-drop-hint">拖到这里 / 点击</div>
-              </div>
-              <div
-                class="bin"
-                data-category="厨余垃圾"
-              >
-                <div class="bin-label-row">
-                  <span class="bin-emoji">🥕</span>
-                  <span class="bin-title">厨余垃圾</span>
-                </div>
-                <div class="bin-desc">菜叶果皮、剩饭剩菜、茶叶渣等易腐烂食物</div>
-                <div class="bin-drop-hint">拖到这里 / 点击</div>
-              </div>
-              <div
-                class="bin"
-                data-category="有害垃圾"
-              >
-                <div class="bin-label-row">
-                  <span class="bin-emoji">☠️</span>
-                  <span class="bin-title">有害垃圾</span>
-                </div>
-                <div class="bin-desc">电池、灯管、药品等对环境有害的垃圾</div>
-                <div class="bin-drop-hint">拖到这里 / 点击</div>
-              </div>
-              <div
-                class="bin"
-                data-category="其他垃圾"
-              >
-                <div class="bin-label-row">
-                  <span class="bin-emoji">🗑️</span>
-                  <span class="bin-title">其他垃圾</span>
-                </div>
-                <div class="bin-desc">难以回收和利用的其它生活垃圾</div>
-                <div class="bin-drop-hint">拖到这里 / 点击</div>
-              </div>
-            </div>
-
-            <div class="game-feedback" id="gameFeedback">
-              🐼 小熊猫：准备好了吗？开始游戏我们就上岗啦～
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 关于项目区 -->
-      <section id="about-section" class="card hidden">
-        <div class="card-header">
-          <div>
-            <div class="card-title">
-              <span>🌱</span> 关于这个网页
-            </div>
-            <div class="card-subtitle">
-              这是一个练手 + 有实际意义的小项目，也可以作为作业或作品展示。
-            </div>
-          </div>
-        </div>
-        <div class="about-text">
-          <p>
-            本网页主要功能是<strong>垃圾分类查询</strong>和<strong>互动小游戏</strong>：
-          </p>
-          <ul style="font-size: 13px; padding-left: 18px; margin-top: 0;">
-            <li>支持通过关键字查询垃圾所属的类别，并给出简单理由</li>
-            <li>内置自动补全功能，输入几个字就会给你推荐可能的垃圾名称</li>
-            <li>通过小游戏练习分类，让“垃圾分类”变成一件轻松的事</li>
-          </ul>
-          <p>
-            所有垃圾数据都写在前端 JavaScript 里，不依赖服务器，适合作为静态网页部署在 GitHub Pages 等平台。
-          </p>
-          <div class="about-highlight">
-            👩‍💻 开发建议：<br />
-            你可以继续在 <code>trashData</code> 数组中
-            <strong>追加更多垃圾名称</strong>，也可以把这个项目和
-            <strong>数据库、问卷统计、甚至 AI 识别</strong> 结合起来，变成一个完整的课程/论文实验小系统。
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <span>🌏 一起做好垃圾分类，让地球轻一点。</span>
-    </footer>
+<!-- ========== Header ========== -->
+<header class="top-header">
+  <div class="logo-wrap">
+    <div class="logo-icon">📁</div>
+    <div>
+      <div class="logo-title">生活垃圾分类助手</div>
+      <div class="logo-subtitle">快速查询垃圾类别，提高分类准确性</div>
+    </div>
   </div>
 
-  <script>
-    // ==========================
-    // 垃圾数据（可以自己继续往下加）
-    // ==========================
-    const trashData = [
-      // 厨余垃圾
-      {
-        name: "香蕉皮",
-        category: "厨余垃圾",
-        icon: "🍌",
-        reason: "属于果皮类，易腐烂，可作为堆肥原料。"
-      },
-      {
-        name: "苹果核",
-        category: "厨余垃圾",
-        icon: "🍎",
-        reason: "水果残渣，易腐烂，适合进入厨余垃圾。"
-      },
-      {
-        name: "剩饭",
-        category: "厨余垃圾",
-        icon: "🍚",
-        reason: "米饭等熟食残余，典型厨余垃圾。"
-      },
-      {
-        name: "剩菜",
-        category: "厨余垃圾",
-        icon: "🥦",
-        reason: "菜叶、菜梗等剩菜都属于厨余垃圾。"
-      },
-      {
-        name: "茶叶渣",
-        category: "厨余垃圾",
-        icon: "🍵",
-        reason: "茶叶、咖啡渣都属于易腐烂的有机物。"
-      },
-      {
-        name: "鸡蛋壳",
-        category: "厨余垃圾",
-        icon: "🥚",
-        reason: "蛋壳属于食材残余，可进入厨余垃圾。"
-      },
-      {
-        name: "鱼骨头",
-        category: "厨余垃圾",
-        icon: "🐟",
-        reason: "小骨头可以归类为厨余垃圾。"
-      },
-      {
-        name: "菜叶",
-        category: "厨余垃圾",
-        icon: "🥬",
-        reason: "叶菜类剩余，典型厨余垃圾。"
-      },
-      {
-        name: "瓜子壳",
-        category: "厨余垃圾",
-        icon: "🌰",
-        reason: "坚果壳、瓜子壳一般按厨余处理。"
-      },
-      {
-        name: "西瓜皮",
-        category: "厨余垃圾",
-        icon: "🍉",
-        reason: "果皮类垃圾，易腐烂。"
-      },
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="langZhBtn">中文</button>
+    <span>/</span>
+    <button class="lang-btn" id="langKoBtn">한국어</button>
+  </div>
+</header>
 
-      // 可回收物
-      {
-        name: "塑料瓶",
-        category: "可回收物",
-        icon: "🥤",
-        reason: "PET 材质塑料瓶可以回收再利用。"
-      },
-      {
-        name: "饮料瓶",
-        category: "可回收物",
-        icon: "🥤",
-        reason: "清洗干净后作为可回收物处理。"
-      },
-      {
-        name: "牛奶盒",
-        category: "可回收物",
-        icon: "🥛",
-        reason: "纸盒包装，需尽量压扁并沥干。"
-      },
-      {
-        name: "纸箱",
-        category: "可回收物",
-        icon: "📦",
-        reason: "干净纸箱可回收，注意避免沾油污。"
-      },
-      {
-        name: "快递盒",
-        category: "可回收物",
-        icon: "📦",
-        reason: "拆除胶带、填充物后分类为可回收。"
-      },
-      {
-        name: "报纸",
-        category: "可回收物",
-        icon: "📰",
-        reason: "废弃纸张，适合进入可回收物。"
-      },
-      {
-        name: "书本",
-        category: "可回收物",
-        icon: "📚",
-        reason: "纸质书籍可回收处理。"
-      },
-      {
-        name: "易拉罐",
-        category: "可回收物",
-        icon: "🥫",
-        reason: "金属材质，可回收再利用。"
-      },
-      {
-        name: "玻璃瓶",
-        category: "可回收物",
-        icon: "🍾",
-        reason: "完整的玻璃瓶属于可回收物。"
-      },
-      {
-        name: "金属罐头盒",
-        category: "可回收物",
-        icon: "🥫",
-        reason: "金属包装容器，可回收。"
-      },
-      {
-        name: "旧衣服",
-        category: "可回收物",
-        icon: "👚",
-        reason: "可在专门投放点作为可回收纺织品。"
-      },
-      {
-        name: "纸杯",
-        category: "可回收物",
-        icon: "🥤",
-        reason: "干净且无塑料内膜损坏的纸杯可回收。"
-      },
+<!-- ========== 页面主体 ========== -->
+<main class="page-wrap">
 
-      // 有害垃圾
-      {
-        name: "充电电池",
-        category: "有害垃圾",
-        icon: "🔋",
-        reason: "含重金属，对环境有危害，应单独回收。"
-      },
-      {
-        name: "纽扣电池",
-        category: "有害垃圾",
-        icon: "🔋",
-        reason: "电池类统一按有害垃圾专门回收。"
-      },
-      {
-        name: "荧光灯管",
-        category: "有害垃圾",
-        icon: "💡",
-        reason: "含汞等有害物质，需放入有害垃圾回收。"
-      },
-      {
-        name: "药片",
-        category: "有害垃圾",
-        icon: "💊",
-        reason: "过期或不用的药品应投放有害垃圾。"
-      },
-      {
-        name: "过期药品",
-        category: "有害垃圾",
-        icon: "💊",
-        reason: "药品对环境和人体具有潜在危害。"
-      },
-      {
-        name: "指甲油",
-        category: "有害垃圾",
-        icon: "💅",
-        reason: "含有机溶剂，应按有害垃圾处理。"
-      },
-      {
-        name: "废体温计",
-        category: "有害垃圾",
-        icon: "🌡️",
-        reason: "含汞玻璃体温计属于有害垃圾。"
-      },
+  <!-- 顶部标签导航 -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-target="search-section" id="navSearchBtn">查询分类</button>
+    <button class="tab-btn" data-target="game-section" id="navGameBtn">分类练习</button>
+    <button class="tab-btn" data-target="about-section" id="navAboutBtn">关于网页</button>
+  </nav>
 
-      // 其他垃圾
-      {
-        name: "一次性筷子",
-        category: "其他垃圾",
-        icon: "🥢",
-        reason: "难以回收再利用，一般按其他垃圾处理。"
-      },
-      {
-        name: "餐巾纸",
-        category: "其他垃圾",
-        icon: "🧻",
-        reason: "卫生纸类不适合回收，按其他垃圾。"
-      },
-      {
-        name: "湿纸巾",
-        category: "其他垃圾",
-        icon: "🧻",
-        reason: "含化学成分，难分解，属于其他垃圾。"
-      },
-      {
-        name: "塑料袋",
-        category: "其他垃圾",
-        icon: "🛍️",
-        reason: "薄塑料袋难以回收，通常归为其他垃圾。"
-      },
-      {
-        name: "牙刷",
-        category: "其他垃圾",
-        icon: "🪥",
-        reason: "材质复杂，一般归入其他垃圾。"
-      },
-      {
-        name: "陶瓷碗",
-        category: "其他垃圾",
-        icon: "🍜",
-        reason: "破损陶瓷不易回收，属于其他垃圾。"
-      },
-      {
-        name: "烟头",
-        category: "其他垃圾",
-        icon: "🚬",
-        reason: "含有有害物质且难以回收，归为其他垃圾。"
-      },
-      {
-        name: "口罩",
-        category: "其他垃圾",
-        icon: "😷",
-        reason: "卫生防护用品，按其他垃圾处理。"
-      },
-      {
-        name: "破玻璃",
-        category: "其他垃圾",
-        icon: "🪟",
-        reason: "碎玻璃存在安全风险，一般按其他垃圾处理。"
-      },
-      {
-        name: "橡皮筋",
-        category: "其他垃圾",
-        icon: "🧵",
-        reason: "小型塑胶制品，通常归类其他垃圾。"
-      },
-      {
-        name: "发夹",
-        category: "其他垃圾",
-        icon: "📎",
-        reason: "金属塑料混合小物件，多按其他垃圾处理。"
-      },
-      {
-        name: "棉签",
-        category: "其他垃圾",
-        icon: "🦴",
-        reason: "卫生类用品，归入其他垃圾。"
-      }
-    ];
+  <!-- ========== 搜索模块 ========== -->
+  <section id="search-section" class="card">
+    <header class="card-header">
+      <h2 class="card-title">
+        🔍 <span id="searchTitleText">垃圾分类查询</span>
+      </h2>
+      <p class="card-subtitle" id="searchSubtitleText">输入垃圾名称，系统将自
+动匹配对应分类。</p>
+    </header>
 
-    // ==========================
-    // 导航切换
-    // ==========================
-    const navButtons = document.querySelectorAll(".nav-btn");
-    const sections = {
-      "search-section": document.getElementById("search-section"),
-      "game-section": document.getElementById("game-section"),
-      "about-section": document.getElementById("about-section")
-    };
+    <div class="search-row">
+      <div class="search-input-box">
+        <span class="search-input-icon">🔍</span>
+        <input id="searchInput" class="search-input" autocomplete="off"
+               placeholder="请输入垃圾名称，例如：香蕉皮、纸盒、电池..." />
+        <ul id="suggestionList" class="suggestion-list hidden"></ul>
+      </div>
 
-    navButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        navButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const target = btn.getAttribute("data-target");
-        Object.keys(sections).forEach((key) => {
-          if (key === target) {
-            sections[key].classList.remove("hidden");
-          } else {
-            sections[key].classList.add("hidden");
-          }
-        });
-      });
-    });
+      <button id="searchBtn" class="search-btn">搜索</button>
+    </div>
 
-    // ==========================
-    // 搜索 + 自动补全
-    // ==========================
-    const searchInput = document.getElementById("searchInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const suggestionList = document.getElementById("suggestionList");
-    const resultArea = document.getElementById("resultArea");
-    const statSearchCount = document.getElementById("statSearchCount");
+    <section id="resultArea" class="result-area">
+      <p id="resultEmptyText">请在上方输入垃圾名称以查看分类结果。</p>
+    </section>
 
-    let searchCount = 0;
+    <span id="statSearchCount" class="stat-pill">今日查询：0 次</span>
+  </section>
 
-    function updateSearchStat() {
-      statSearchCount.textContent = `今日查询：${searchCount} 次`;
-    }
+  <!-- ========== 分类练习模块 ========== -->
+  <section id="game-section" class="card hidden">
 
-    function clearResult() {
-      resultArea.innerHTML = `
-        <div class="result-empty">
-          <span>🐰</span>
-          还没有结果呢，可以试试搜索 “香蕉皮 / 塑料瓶 / 电池” 之类的～
-        </div>
-      `;
-    }
+    <header class="card-header">
+      <h2 class="card-title">🎮 <span id="gameTitleText">分类练习</span></h2>
+      <p class="card-subtitle" id="gameSubtitleText">通过练习提升对垃圾分类规则的理解。</p>
+    </header>
 
-    function renderResult(item) {
-      const isDanger =
-        item.category === "有害垃圾";
-      const badgeClass = isDanger ? "badge badge-danger" : "badge";
-      const badgeText = item.category;
-      const tipText = isDanger
-        ? "⚠️ 有害垃圾请投放到专门的回收箱，避免随意丢弃。"
-        : "✅ 不同城市分类细则可能略有不同，可结合当地政策参考使用。";
+    <div class="game-layout">
 
-      resultArea.innerHTML = `
-        <div class="result-card">
-          <div class="result-main-row">
-            <div class="result-icon">${item.icon || "🗑️"}</div>
-            <div class="result-name">${item.name}</div>
-            <div class="${badgeClass}">
-              <span class="badge-dot"></span>
-              <span>${badgeText}</span>
-            </div>
+      <!-- 左侧说明 -->
+      <aside class="game-status-card">
+        <strong id="gameRulesTitle">操作说明</strong>
+        <ul class="game-intro-list">
+          <li id="rule1">系统随机出现一个垃圾名称</li>
+          <li id="rule2">选择你认为正确的分类</li>
+          <li id="rule3">答对加分，答错扣分</li>
+        </ul>
+
+        <div class="game-status-row">
+          <div class="status-tag" id="badgeScore">
+            <span id="labelScore">分数：</span><strong id="gameScore">0</strong>
           </div>
-          <div class="result-reason">${item.reason || "此类垃圾建议按照当地具体分类规则投放。"}</div>
-          <div class="result-tip">${tipText}</div>
-        </div>
-      `;
-    }
-
-    function searchTrash() {
-      const keyword = searchInput.value.trim();
-      if (!keyword) {
-        clearResult();
-        return;
-      }
-
-      // 完全匹配优先
-      let result = trashData.find((t) => t.name === keyword);
-      if (!result) {
-        // 再做包含匹配
-        const lower = keyword.toLowerCase();
-        result = trashData.find(
-          (t) => t.name.toLowerCase().includes(lower)
-        );
-      }
-
-      searchCount++;
-      updateSearchStat();
-
-      if (!result) {
-        resultArea.innerHTML = `
-          <div class="result-empty">
-            <span>🐱</span>
-            没有找到 “${keyword}” 的明确分类，可以尝试换个说法，
-            或者你也可以把这条垃圾补充到数据里哦～
+          <div class="status-tag" id="badgeRound">
+            <span id="labelRound">题目：</span><strong id="gameRound">0</strong> / <span id="gameMaxRound">20</span>
           </div>
-        `;
-      } else {
-        renderResult(result);
-      }
-    }
+          <div class="status-tag" id="badgeLives">
+            <span id="labelLives">剩余：</span><strong id="gameLives">5</strong>
+          </div>
+        </div>
 
-    function updateSuggestions() {
-      const keyword = searchInput.value.trim();
-      if (!keyword) {
-        suggestionList.classList.add("hidden");
-        suggestionList.innerHTML = "";
-        return;
-      }
-      const lower = keyword.toLowerCase();
-      const matches = trashData.filter((t) =>
-        t.name.toLowerCase().includes(lower)
-      ).slice(0, 8);
+        <div class="game-btn-row">
+          <button class="btn-outline" id="btnStartGame">开始练习</button>
+          <button class="btn-outline" id="btnSkip">跳过</button>
+          <button class="btn-outline btn-outline-danger" id="btnReveal">显示答案</button>
+        </div>
+      </aside>
 
-      if (matches.length === 0) {
-        suggestionList.classList.add("hidden");
-        suggestionList.innerHTML = "";
-        return;
-      }
+      <!-- 右侧游戏界面 -->
+      <section class="game-area">
+        <p class="game-subtitle" id="currentTrashLabel">当前垃圾：</p>
+        <div id="gameTrashItem" class="game-trash-item">点击“开始练习”以开始</div>
 
-      suggestionList.innerHTML = "";
-      matches.forEach((item) => {
-        const li = document.createElement("li");
-        li.className = "suggestion-item";
-        li.innerHTML = `
-          <span class="suggestion-icon">${item.icon || "🗑️"}</span>
-          <span>${item.name}</span>
-        `;
-        li.addEventListener("click", () => {
-          searchInput.value = item.name;
-          suggestionList.classList.add("hidden");
-          suggestionList.innerHTML = "";
-          searchTrash();
-        });
-        suggestionList.appendChild(li);
-      });
-      suggestionList.classList.remove("hidden");
-    }
+        <div class="bins-grid">
+          <button class="bin" data-category="recycle" id="binRecycle">♻️ 可回收物</button>
+          <button class="bin" data-category="kitchen" id="binKitchen">🥕 厨余垃圾</button>
+          <button class="bin" data-category="hazard" id="binHazard">☠️ 有害垃圾</button>
+          <button class="bin" data-category="other" id="binOther">🗑️ 其他垃圾</button>
+        </div>
 
-    searchInput.addEventListener("input", updateSuggestions);
-    searchInput.addEventListener("focus", updateSuggestions);
-    searchInput.addEventListener("blur", () => {
-      // 稍微延迟，避免点击选项时被立即隐藏
-      setTimeout(() => {
-        suggestionList.classList.add("hidden");
-      }, 150);
-    });
+        <div id="gameFeedback" class="game-feedback">准备就绪</div>
+      </section>
 
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        searchTrash();
-      }
-    });
+    </div>
+  </section>
 
-    searchBtn.addEventListener("click", searchTrash);
+  <!-- ========== 关于网页 ========== -->
+  <section id="about-section" class="card hidden">
+    <header class="card-header">
+      <h2 class="card-title">ℹ️ <span id="aboutTitleText">关于网页</span></h2>
+      <p class="card-subtitle" id="aboutSubtitleText">简要说明本网页的功能与使用方式。</p>
+    </header>
 
-    // 初始化
-    clearResult();
-    updateSearchStat();
+    <div class="about-text">
+      <p id="aboutP1">本网页用于帮助用户快速查询垃圾分类信息，并通过练习提升分类能力。</p>
+      <p id="aboutP2">页面提供中 / 韩双语界面，适合学习、课堂展示或日常宣传。</p>
 
-    // ==========================
-    // 小游戏逻辑
-    // ==========================
-    const gameScoreEl = document.getElementById("gameScore");
-    const gameRoundEl = document.getElementById("gameRound");
-    const gameLivesEl = document.getElementById("gameLives");
-    const gameFeedbackEl = document.getElementById("gameFeedback");
-    const gameTrashItemEl = document.getElementById("gameTrashItem");
-    const gameTrashNameEl = document.getElementById("gameTrashName");
-    const btnStartGame = document.getElementById("btnStartGame");
-    const btnSkip = document.getElementById("btnSkip");
-    const btnReveal = document.getElementById("btnReveal");
-    const bins = document.querySelectorAll(".bin");
+      <h3 id="guideTitle">使用指南</h3>
+      <ul class="guide-list">
+        <li id="guide1">通过顶部标签切换不同功能模块</li>
+        <li id="guide2">输入垃圾名称即可查看分类结果</li>
+        <li id="guide3">练习模块提供 20 道题的互动练习</li>
+        <li id="guide4">右上角可切换中韩语言界面</li>
+      </ul>
+    </div>
+  </section>
 
-    let gameScore = 0;
-    let gameRound = 0;
-    let gameLives = 5;
-    let currentGameItem = null;
-    let gameActive = false;
+</main>
 
-    // 从 trashData 里挑一些适合做题目的条目
-    const gameItems = trashData.filter((item) => !!item.icon);
 
-    function resetGame() {
-      gameScore = 0;
-      gameRound = 0;
-      gameLives = 5;
-      gameActive = true;
-      gameFeedbackEl.textContent = "🐼 开始啦！请把垃圾拖到正确的垃圾桶，或者直接点击垃圾桶作答～";
-      updateGameStatus();
-      nextQuestion();
-    }
+<!-- ========== JavaScript ========== -->
+<script>
+/* 语言包 */
+const i18n = {
+  zh: {
+    title:"生活垃圾分类助手",
+    subtitle:"快速查询垃圾类别，提高分类准确性",
 
-    function updateGameStatus() {
-      gameScoreEl.textContent = gameScore;
-      gameRoundEl.textContent = gameRound;
-      gameLivesEl.textContent = gameLives;
-    }
+    navSearch:"查询分类",
+    navGame:"分类练习",
+    navAbout:"关于网页",
 
-    function randomItem() {
-      const idx = Math.floor(Math.random() * gameItems.length);
-      return gameItems[idx];
-    }
+    searchTitle:"垃圾分类查询",
+    searchSubtitle:"输入垃圾名称，系统将自动匹配对应分类。",
+    searchPlaceholder:"请输入垃圾名称，例如：香蕉皮、纸盒、电池...",
+    searchBtn:"搜索",
+    resultEmpty:"请在上方输入垃圾名称以查看分类结果。",
+    todayQuery:"今日查询：",
 
-    function nextQuestion() {
-      if (!gameActive) return;
-      if (gameLives <= 0 || gameRound >= 20) {
-        gameActive = false;
-        gameFeedbackEl.textContent = `📘 游戏结束！你一共答对 ${gameScore} 题，可以点击“开始新游戏”再玩一次～`;
-        gameTrashNameEl.textContent = "游戏结束啦～";
-        return;
-      }
+    gameTitle:"分类练习",
+    gameSubtitle:"通过练习提升对垃圾分类规则的理解。",
+    rulesTitle:"操作说明",
+    rule1:"系统随机出现一个垃圾名称",
+    rule2:"选择你认为正确的分类",
+    rule3:"答对加分，答错扣分",
 
-      currentGameItem = randomItem();
-      gameRound++;
-      updateGameStatus();
+    labelScore:"分数：",
+    labelRound:"题目：",
+    labelLives:"剩余：",
+    currentTrash:"当前垃圾：",
+    clickStart:"点击“开始练习”以开始",
+    gameReady:"准备就绪",
+    chooseCategory:"请选择分类",
 
-      gameTrashNameEl.textContent = currentGameItem.name;
-      gameTrashItemEl.querySelector(".icon").textContent =
-        currentGameItem.icon || "🗑️";
-    }
+    recycle:"可回收物",
+    kitchen:"厨余垃圾",
+    hazard:"有害垃圾",
+    other:"其他垃圾",
 
-    function handleAnswer(category) {
-      if (!gameActive || !currentGameItem) return;
-      const correct = currentGameItem.category === category;
-      if (correct) {
-        gameScore++;
-        gameFeedbackEl.textContent =
-          `✅ 答对啦！“${currentGameItem.name}” 属于【${currentGameItem.category}】。`;
-        gameFeedbackEl.classList.remove("wrong");
-        gameFeedbackEl.classList.add("correct");
-      } else {
-        gameLives--;
-        gameFeedbackEl.textContent =
-          `❌ 小失误～ “${currentGameItem.name}” 实际属于【${currentGameItem.category}】。`;
-        gameFeedbackEl.classList.remove("correct");
-        gameFeedbackEl.classList.add("wrong");
-      }
-      updateGameStatus();
-      setTimeout(() => {
-        gameFeedbackEl.classList.remove("correct", "wrong");
-        nextQuestion();
-      }, 900);
-    }
+    btnStart:"开始练习",
+    btnSkip:"跳过",
+    btnReveal:"显示答案",
 
-    // 拖拽事件
-    gameTrashItemEl.addEventListener("dragstart", (e) => {
-      if (!gameActive || !currentGameItem) {
-        e.preventDefault();
-        return;
-      }
-      e.dataTransfer.setData("text/plain", currentGameItem.category);
-    });
+    correct:"回答正确。",
+    wrong:"回答错误。",
+    finishedTitle:"练习完成",
+    finishedSummary:(score,max)=>`你完成了 ${max} 道题，共得分 ${score} 分。`,
+    finishedTip:"可以重新开始练习以进一步提升对分类的理解。",
 
-    bins.forEach((bin) => {
-      // 允许拖拽经过
-      bin.addEventListener("dragover", (e) => {
-        e.preventDefault();
-      });
-      bin.addEventListener("drop", (e) => {
-        e.preventDefault();
-        const cat = e.dataTransfer.getData("text/plain");
-        handleAnswer(bin.getAttribute("data-category"));
-      });
-      // 点击作答
-      bin.addEventListener("click", () => {
-        handleAnswer(bin.getAttribute("data-category"));
-      });
-    });
+    aboutTitle:"关于网页",
+    aboutSubtitle:"简要说明本网页的功能与使用方式。",
+    aboutP1:"本网页用于帮助用户快速查询常见生活垃圾的分类结果，并通过练习模块加深对分类规则的理解。",
+    aboutP2:"页面提供中 / 韩双语界面，适用于学习、课堂展示或基础宣传使用。",
+    guideTitle:"使用指南",
+    g1:"通过顶部标签切换“查询分类 / 分类练习 / 关于网页”",
+    g2:"在查询页面输入垃圾名称即可查看对应分类",
+    g3:"在练习页面进行 20 道分类练习，系统会给出反馈",
+    g4:"右上角可以在中文与韩语之间切换"
+  },
 
-    btnStartGame.addEventListener("click", resetGame);
-    btnSkip.addEventListener("click", () => {
-      if (!gameActive) return;
-      gameFeedbackEl.textContent = "➡️ 已跳过这一题，我们来看看下一道～";
-      nextQuestion();
-    });
-    btnReveal.addEventListener("click", () => {
-      if (!currentGameItem) return;
-      gameFeedbackEl.textContent =
-        `📖 答案提示：“${currentGameItem.name}” 属于【${currentGameItem.category}】。`;
-    });
-  </script>
+  ko:{
+    title:"생활 쓰레기 분류 도우미",
+    subtitle:"쓰레기 종류를 빠르게 조회하여 정확성을 높입니다",
+
+    navSearch:"분류 조회",
+    navGame:"분류 연습",
+    navAbout:"웹페이지 소개",
+
+    searchTitle:"쓰레기 분류 조회",
+    searchSubtitle:"쓰레기 이름을 입력하면 자동으로 분류 결과를 안내합니다.",
+    searchPlaceholder:"예: 바나나 껍질, 상자, 건전지 등",
+    searchBtn:"검색",
+    resultEmpty:"위에 쓰레기 이름을 입력해 분류 결과를 확인하세요.",
+    todayQuery:"오늘 조회：",
+
+    gameTitle:"분류 연습",
+    gameSubtitle:"연습을 통해 분류 규칙을 쉽게 익힐 수 있습니다.",
+    rulesTitle:"사용 설명",
+    rule1:"시스템이 무작위로 쓰레기 이름을 제시합니다",
+    rule2:"올바른 분류를 선택하세요",
+    rule3:"정답이면 점수 상승, 오답이면 감점됩니다",
+
+    labelScore:"점수：",
+    labelRound:"문제：",
+    labelLives:"남은 횟수：",
+    currentTrash:"현재 쓰레기：",
+    clickStart:"‘연습 시작’을 눌러 시작하세요",
+    gameReady:"준비 완료",
+    chooseCategory:"분류를 선택하세요",
+
+    recycle:"재활용",
+    kitchen:"음식물 쓰레기",
+    hazard:"유해 쓰레기",
+    other:"기타 쓰레기",
+
+    btnStart:"연습 시작",
+    btnSkip:"건너뛰기",
+    btnReveal:"정답 보기",
+
+    correct:"정답입니다.",
+    wrong:"오답입니다.",
+    finishedTitle:"연습 완료",
+    finishedSummary:(score,max)=>`총 ${max}문제 중 ${score}점을 획득했습니다.`,
+    finishedTip:"다시 연습하여 분류 규칙을 더 잘 이해할 수 있습니다.",
+
+    aboutTitle:"웹페이지 소개",
+    aboutSubtitle:"이 웹페이지의 주요 기능과 사용 방법을 설명합니다.",
+    aboutP1:"이 웹페이지는 일상 생활에서 자주 접하는 쓰레기의 분류 결과를 빠르게 조회할 수 있도록 도와줍니다.",
+    aboutP2:"중국어 / 한국어 두 가지 언어를 제공하여 학습과 수업 시 활용하기 좋습니다.",
+    guideTitle:"사용 안내",
+    g1:"상단 탭에서 ‘분류 조회 / 분류 연습 / 웹페이지 소개’를 선택하세요",
+    g2:"조회 페이지에서 쓰레기 이름을 입력하면 분류 결과를 볼 수 있습니다",
+    g3:"연습 페이지에서 총 20문제를 풀며 피드백을 받을 수 있습니다",
+    g4:"오른쪽 상단 버튼으로 언어를 전환할 수 있습니다"
+  }
+};
+
+let currentLang="zh";
+
+/* ========== 垃圾数据库 ========== */
+const trashDB={
+  "香蕉皮":"kitchen","剩饭":"kitchen","菜叶":"kitchen","鸡骨头":"kitchen",
+  "苹果核":"kitchen","塑料瓶":"recycle","纸盒":"recycle",
+  "纸箱":"recycle","玻璃瓶":"recycle","易拉罐":"recycle",
+  "电池":"hazard","药片":"hazard","灯泡":"hazard","荧光灯管":"hazard",
+  "纸巾":"other","灰尘":"other","破瓷片":"other","一次性筷子":"other"
+};
+const trashList=Object.keys(trashDB);
+
+/* 游戏变量 */
+let searchCount=0;
+let gameScore=0;
+let gameRound=0;
+let gameLives=5;
+let currentTrash=null;
+let gameStarted=false;
+let gameEnded=false;
+const MAX_ROUNDS=20;
+
+/* ========== 多语言应用函数 ========== */
+function applyLanguage(lang){
+  currentLang=lang;
+  const t=i18n[lang];
+
+  document.querySelector(".logo-title").textContent=t.title;
+  document.querySelector(".logo-subtitle").textContent=t.subtitle;
+
+  navSearchBtn.textContent=t.navSearch;
+  navGameBtn.textContent=t.navGame;
+  navAboutBtn.textContent=t.navAbout;
+
+  searchTitleText.textContent=t.searchTitle;
+  searchSubtitleText.textContent=t.searchSubtitle;
+  searchInput.placeholder=t.searchPlaceholder;
+  searchBtn.textContent=t.searchBtn;
+  resultEmptyText.textContent=t.resultEmpty;
+  statSearchCount.textContent=`${t.todayQuery}${searchCount}${lang==="zh"?" 次":"회"}`;
+
+  gameTitleText.textContent=t.gameTitle;
+  gameSubtitleText.textContent=t.gameSubtitle;
+  gameRulesTitle.textContent=t.rulesTitle;
+  rule1.textContent=t.rule1;
+  rule2.textContent=t.rule2;
+  rule3.textContent=t.rule3;
+  labelScore.textContent=t.labelScore;
+  labelRound.textContent=t.labelRound;
+  labelLives.textContent=t.labelLives;
+  currentTrashLabel.textContent=t.currentTrash;
+
+  if(!gameStarted||gameEnded){
+    gameTrashItem.textContent=t.clickStart;
+    gameFeedback.textContent=t.gameReady;
+  }
+
+  btnStartGame.textContent=t.btnStart;
+  btnSkip.textContent=t.btnSkip;
+  btnReveal.textContent=t.btnReveal;
+
+  binRecycle.textContent="♻️ "+t.recycle;
+  binKitchen.textContent="🥕 "+t.kitchen;
+  binHazard.textContent="☠️ "+t.hazard;
+  binOther.textContent="🗑️ "+t.other;
+
+  aboutTitleText.textContent=t.aboutTitle;
+  aboutSubtitleText.textContent=t.aboutSubtitle;
+  aboutP1.textContent=t.aboutP1;
+  aboutP2.textContent=t.aboutP2;
+  guideTitle.textContent=t.guideTitle;
+  guide1.textContent=t.g1;
+  guide2.textContent=t.g2;
+  guide3.textContent=t.g3;
+  guide4.textContent=t.g4;
+
+  langZhBtn.classList.toggle("active",lang==="zh");
+  langKoBtn.classList.toggle("active",lang==="ko");
+}
+
+/* 绑定语言按钮 */
+langZhBtn.onclick=()=>applyLanguage("zh");
+langKoBtn.onclick=()=>applyLanguage("ko");
+
+/* ========== Tab 页切换 ========== */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    document.querySelectorAll("main section").forEach(sec=>sec.classList.add("hidden"));
+    document.getElementById(btn.dataset.target).classList.remove("hidden");
+  };
+});
+
+/* ========== 搜索功能 ========== */
+searchInput.addEventListener("input",()=>{
+  const text=searchInput.value.trim();
+  if(!text){ suggestionList.classList.add("hidden"); return; }
+
+  const list=trashList.filter(n=>n.includes(text));
+  suggestionList.innerHTML="";
+  list.forEach(n=>{
+    const li=document.createElement("li");
+    li.textContent=n;
+    li.onclick=()=>{ searchInput.value=n; suggestionList.classList.add("hidden"); };
+    suggestionList.appendChild(li);
+  });
+  suggestionList.classList.toggle("hidden",list.length===0);
+});
+
+searchBtn.onclick=()=>{
+  const t=i18n[currentLang];
+  const text=searchInput.value.trim();
+  if(!text)return;
+
+  searchCount++;
+  statSearchCount.textContent=`${t.todayQuery}${searchCount}${currentLang==="zh"?" 次":"회"}`;
+
+  if(!trashDB[text]){
+    resultArea.innerHTML="<p>未找到该垃圾，请检查名称。</p>";
+    return;
+  }
+
+  resultArea.innerHTML=
+    `<div class="result-title">${text}</div>
+     <div class="result-meta">${{
+        recycle:t.recycle,kitchen:t.kitchen,
+        hazard:t.hazard,other:t.other
+     }[trashDB[text]]}</div>`;
+};
+
+/* ========== 分类练习逻辑 ========== */
+function updateBadges(){
+  gameScore.textContent=gameScore;
+  gameRound.textContent=gameRound;
+  gameLives.textContent=gameLives;
+}
+
+function startGame(){
+  const t=i18n[currentLang];
+  gameScore=0; gameRound=0; gameLives=5;
+  gameEnded=false; gameStarted=true;
+  updateBadges();
+  nextRound();
+}
+
+function nextRound(){
+  const t=i18n[currentLang];
+  if(gameLives<=0||gameRound>=MAX_ROUNDS){
+    gameEnded=true;
+    gameFeedback.className="game-feedback game-end";
+    gameFeedback.innerHTML=
+      `<strong>${t.finishedTitle}</strong><br>${t.finishedSummary(gameScore,MAX_ROUNDS)}<br>${t.finishedTip}`;
+    gameTrashItem.textContent="";
+    return;
+  }
+
+  gameRound++;
+  updateBadges();
+
+  currentTrash=trashList[Math.floor(Math.random()*trashList.length)];
+  gameTrashItem.textContent=currentTrash;
+  gameFeedback.textContent=t.chooseCategory;
+}
+
+function checkAnswer(cat){
+  if(!gameStarted||gameEnded||!currentTrash)return;
+  const t=i18n[currentLang];
+
+  if(trashDB[currentTrash]===cat){
+    gameScore++;
+    gameFeedback.className="game-feedback feedback-correct";
+    gameFeedback.textContent=t.correct;
+  }else{
+    gameLives--;
+    gameFeedback.className="game-feedback feedback-wrong";
+    gameFeedback.textContent=t.wrong;
+  }
+  updateBadges();
+  setTimeout(nextRound,600);
+}
+
+btnStartGame.onclick=startGame;
+btnSkip.onclick=nextRound;
+btnReveal.onclick=()=>{
+  if(!currentTrash)return;
+  const t=i18n[currentLang];
+  const cat=trashDB[currentTrash];
+  gameFeedback.textContent=currentTrash+" → "+{
+    recycle:t.recycle,kitchen:t.kitchen,hazard:t.hazard,other:t.other
+  }[cat];
+};
+
+document.querySelectorAll(".bin").forEach(b=>{
+  b.onclick=()=>checkAnswer(b.dataset.category);
+});
+
+/* 初始化语言 */
+applyLanguage("zh");
+</script>
+
 </body>
 </html>
