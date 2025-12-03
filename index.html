@@ -1,25 +1,24 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>生活垃圾分类助手</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    *{box-sizing:border-box;}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body{
-      margin:0;
       background:#f5f7fc;
       font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-      color:#333;
+      color:#1f2933;
     }
     .hidden{display:none!important;}
 
-    /* 顶部 header */
+    /* 顶部头部 */
     .top-header{
+      position:sticky;top:0;z-index:10;
       display:flex;justify-content:space-between;align-items:center;
-      padding:18px 28px;background:#fff;
-      box-shadow:0 2px 20px rgba(0,0,0,0.05);
-      position:sticky;top:0;z-index:100;
+      padding:16px 28px;background:#fff;
+      box-shadow:0 2px 16px rgba(15,23,42,0.05);
     }
     .logo-wrap{display:flex;align-items:center;gap:10px;}
     .logo-icon{font-size:30px;}
@@ -28,46 +27,44 @@
 
     .lang-toggle{display:flex;align-items:center;gap:6px;font-size:14px;}
     .lang-btn{
-      border:none;background:transparent;padding:5px 10px;
-      border-radius:999px;cursor:pointer;transition:.18s;
+      border:none;background:transparent;
+      padding:4px 10px;border-radius:999px;
+      cursor:pointer;transition:.16s;
     }
-    .lang-btn.active{background:#e3efff;color:#2b5dba;}
+    .lang-btn.active{background:#e3efff;color:#2252b3;}
     .lang-btn:hover{background:#edf3ff;}
 
-    /* 页面布局 */
+    /* 页面主体 */
     .page-wrap{
       max-width:960px;margin:24px auto 32px;padding:0 16px;
     }
-
-    /* tab 导航 */
     .tab-nav{
       display:flex;background:#fff;border-radius:999px;
-      box-shadow:0 4px 18px rgba(0,0,0,0.05);
+      box-shadow:0 4px 18px rgba(15,23,42,0.06);
       padding:4px;margin-bottom:20px;
     }
     .tab-btn{
       flex:1;border:none;background:transparent;
       border-radius:999px;padding:10px 12px;
-      font-size:14px;cursor:pointer;color:#627196;
-      transition:.2s;
+      font-size:14px;cursor:pointer;color:#617192;
+      transition:.18s;
     }
     .tab-btn.active{
-      background:#e3efff;color:#1f4c9a;font-weight:600;
+      background:#e3efff;color:#1f4a96;font-weight:600;
     }
 
-    /* 卡片 */
     .card{
       background:#fff;border-radius:18px;
-      box-shadow:0 10px 30px rgba(15,23,42,0.06);
+      box-shadow:0 10px 28px rgba(15,23,42,0.06);
       padding:22px 24px;margin-bottom:22px;
     }
     .card-title{
-      font-size:18px;display:flex;align-items:center;
-      gap:8px;font-weight:700;
+      font-size:18px;font-weight:700;
+      display:flex;align-items:center;gap:8px;
     }
-    .card-subtitle{font-size:14px;opacity:.75;}
+    .card-subtitle{font-size:14px;opacity:.75;margin-top:4px;}
 
-    /* 搜索区 */
+    /* 搜索区域 */
     .search-row{
       display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;
     }
@@ -76,7 +73,8 @@
       width:100%;padding:14px 18px 14px 46px;
       border-radius:999px;border:none;background:#fff;
       box-shadow:0 6px 20px rgba(15,23,42,0.08);
-      font-size:15px;transition:.2s;
+      font-size:15px;
+      transition:.18s;
     }
     .search-input:focus{
       outline:none;
@@ -88,9 +86,9 @@
     }
     .search-btn{
       border:none;border-radius:999px;padding:12px 24px;
-      font-size:14px;
+      font-size:14px;cursor:pointer;white-space:nowrap;
       background:linear-gradient(135deg,#9ec9ff,#6fa8ff);
-      color:#fff;cursor:pointer;white-space:nowrap;
+      color:#fff;
       box-shadow:0 8px 20px rgba(111,168,255,0.35);
       transition:.18s;
     }
@@ -103,8 +101,8 @@
       position:absolute;top:54px;width:100%;
       background:#fff;border-radius:14px;
       box-shadow:0 12px 30px rgba(15,23,42,0.14);
-      border:1px solid #e5edff;list-style:none;
-      padding:8px 0;margin:0;z-index:20;
+      border:1px solid #e5edff;
+      list-style:none;padding:8px 0;margin:0;z-index:20;
     }
     .suggestion-list li{
       padding:8px 14px;font-size:14px;cursor:pointer;
@@ -113,13 +111,14 @@
 
     .result-area{
       margin-top:20px;padding:14px 16px;border-radius:16px;
-      background:#f7f9ff;border:1px solid #e2e9ff;min-height:40px;
+      background:#f7f9ff;border:1px solid #e3ebff;
+      min-height:40px;
     }
     .result-title{font-size:16px;font-weight:600;margin-bottom:4px;}
     .result-meta{font-size:14px;opacity:.85;}
     .stat-pill{
       display:inline-block;padding:6px 12px;border-radius:999px;
-      background:#eaf2ff;color:#2b4f9b;font-size:13px;margin-top:10px;
+      background:#eaf2ff;color:#26479b;font-size:13px;margin-top:10px;
     }
 
     /* 游戏布局 */
@@ -169,6 +168,7 @@
     .feedback-correct{color:#1f8a4d;animation:feedbackPop .35s ease-out;}
     .feedback-wrong{color:#d04545;animation:feedbackShake .3s ease-out;}
     .game-end{animation:endPop .5s ease-out;}
+
     @keyframes feedbackPop{
       0%{transform:scale(.95);opacity:0;}
       100%{transform:scale(1);opacity:1;}
@@ -185,10 +185,9 @@
       100%{transform:scale(1);opacity:1;}
     }
 
-    /* 关于 */
+    /* 关于网页 */
     .guide-list{padding-left:18px;margin-top:6px;}
 
-    /* 响应式 */
     @media(max-width:800px){
       .search-row{flex-direction:column;align-items:stretch;}
       .search-btn{align-self:flex-start;}
@@ -199,521 +198,501 @@
   </style>
 </head>
 <body>
-  <!-- 顶部 header -->
-  <header class="top-header">
-    <div class="logo-wrap">
-      <div class="logo-icon">📁</div>
-      <div>
-        <div class="logo-title">生活垃圾分类助手</div>
-        <div class="logo-subtitle">快速查询垃圾类别，提高分类准确性</div>
-      </div>
+<header class="top-header">
+  <div class="logo-wrap">
+    <div class="logo-icon">📁</div>
+    <div>
+      <div class="logo-title">生活垃圾分类助手</div>
+      <div class="logo-subtitle">快速查询垃圾类别，提高分类准确性</div>
     </div>
-    <div class="lang-toggle">
-      <button class="lang-btn active" id="langZhBtn">中文</button>
-      <span>/</span>
-      <button class="lang-btn" id="langKoBtn">한국어</button>
-    </div>
-  </header>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="langZhBtn">中文</button>
+    <span>/</span>
+    <button class="lang-btn" id="langKoBtn">한국어</button>
+  </div>
+</header>
 
-  <main class="page-wrap">
-    <!-- 顶部 tab -->
-    <nav class="tab-nav">
-      <button class="tab-btn active" data-target="search-section" id="navSearchBtn">查询分类</button>
-      <button class="tab-btn" data-target="game-section" id="navGameBtn">分类练习</button>
-      <button class="tab-btn" data-target="about-section" id="navAboutBtn">关于网页</button>
-    </nav>
+<main class="page-wrap">
+  <!-- Tab 导航 -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-target="search-section" id="navSearchBtn">查询分类</button>
+    <button class="tab-btn" data-target="game-section" id="navGameBtn">分类练习</button>
+    <button class="tab-btn" data-target="about-section" id="navAboutBtn">关于网页</button>
+  </nav>
 
-    <!-- 查询模块 -->
-    <section id="search-section" class="card">
-      <header class="card-header">
-        <h2 class="card-title">🔍 <span id="searchTitleText">垃圾分类查询</span></h2>
-        <p class="card-subtitle" id="searchSubtitleText">
-          输入垃圾名称，系统将自动匹配对应分类。
-        </p>
-      </header>
+  <!-- 查询模块 -->
+  <section id="search-section" class="card">
+    <header>
+      <h2 class="card-title">🔍 <span id="searchTitleText">垃圾分类查询</span></h2>
+      <p class="card-subtitle" id="searchSubtitleText">输入垃圾名称，系统将自动匹配对应分类。</p>
+    </header>
 
-      <div class="search-row">
-        <div class="search-input-box">
-          <span class="search-input-icon">🔍</span>
-          <input id="searchInput" class="search-input" autocomplete="off"
-                 placeholder="请输入垃圾名称，例如：香蕉皮、纸盒、电池..." />
-          <ul id="suggestionList" class="suggestion-list hidden"></ul>
-        </div>
-        <button id="searchBtn" class="search-btn">搜索</button>
+    <div class="search-row">
+      <div class="search-input-box">
+        <span class="search-input-icon">🔍</span>
+        <input id="searchInput" class="search-input" autocomplete="off"
+               placeholder="请输入垃圾名称，例如：香蕉皮、纸盒、电池...">
+        <ul id="suggestionList" class="suggestion-list hidden"></ul>
       </div>
+      <button id="searchBtn" class="search-btn">搜索</button>
+    </div>
 
-      <section id="resultArea" class="result-area">
-        <p id="resultEmptyText">请在上方输入垃圾名称以查看分类结果。</p>
-        <div id="resultContent"></div>
-      </section>
-
-      <span id="statSearchCount" class="stat-pill">今日查询：0 次</span>
+    <section id="resultArea" class="result-area">
+      <p id="resultEmptyText">请在上方输入垃圾名称以查看分类结果。</p>
+      <div id="resultContent"></div>
     </section>
 
-    <!-- 分类练习 -->
-    <section id="game-section" class="card hidden">
-      <header class="card-header">
-        <h2 class="card-title">🎮 <span id="gameTitleText">分类练习</span></h2>
-        <p class="card-subtitle" id="gameSubtitleText">
-          通过练习提升对垃圾分类规则的理解。
-        </p>
-      </header>
+    <span id="statSearchCount" class="stat-pill">今日查询：0 次</span>
+  </section>
 
-      <div class="game-layout">
-        <!-- 左侧说明 -->
-        <aside class="game-status-card">
-          <strong id="gameRulesTitle">操作说明</strong>
-          <ul class="game-intro-list">
-            <li id="rule1">系统随机出现一个垃圾名称</li>
-            <li id="rule2">选择你认为正确的分类</li>
-            <li id="rule3">答对加分，答错扣分</li>
-          </ul>
+  <!-- 分类练习 -->
+  <section id="game-section" class="card hidden">
+    <header>
+      <h2 class="card-title">🎮 <span id="gameTitleText">分类练习</span></h2>
+      <p class="card-subtitle" id="gameSubtitleText">通过练习提升对垃圾分类规则的理解。</p>
+    </header>
 
-          <div class="game-status-row">
-            <div class="status-tag" id="badgeScore">
-              <span id="labelScore">分数：</span><strong id="gameScoreValue">0</strong>
-            </div>
-            <div class="status-tag" id="badgeRound">
-              <span id="labelRound">题目：</span><strong id="gameRoundValue">0</strong> / <span id="gameMaxRound">20</span>
-            </div>
-            <div class="status-tag" id="badgeLives">
-              <span id="labelLives">剩余：</span><strong id="gameLivesValue">5</strong>
-            </div>
-          </div>
-
-          <div class="game-btn-row">
-            <button class="btn-outline" id="btnStartGame">开始练习</button>
-            <button class="btn-outline" id="btnSkip">跳过</button>
-            <button class="btn-outline btn-outline-danger" id="btnReveal">显示答案</button>
-          </div>
-        </aside>
-
-        <!-- 右侧游戏 -->
-        <section class="game-area">
-          <p class="game-subtitle" id="currentTrashLabel">当前垃圾：</p>
-          <div id="gameTrashItem" class="game-trash-item">点击“开始练习”以开始</div>
-
-          <div class="bins-grid">
-            <button class="bin" data-category="recycle" id="binRecycle">♻️ 可回收物</button>
-            <button class="bin" data-category="kitchen" id="binKitchen">🥕 厨余垃圾</button>
-            <button class="bin" data-category="hazard" id="binHazard">☠️ 有害垃圾</button>
-            <button class="bin" data-category="other" id="binOther">🗑️ 其他垃圾</button>
-          </div>
-
-          <div id="gameFeedback" class="game-feedback">准备就绪</div>
-        </section>
-      </div>
-    </section>
-
-    <!-- 关于网页 -->
-    <section id="about-section" class="card hidden">
-      <header class="card-header">
-        <h2 class="card-title">ℹ️ <span id="aboutTitleText">关于网页</span></h2>
-        <p class="card-subtitle" id="aboutSubtitleText">简要说明本网页的功能与使用方式。</p>
-      </header>
-      <div class="about-text">
-        <p id="aboutP1">本网页用于帮助用户快速查询生活垃圾的分类结果，并通过练习模块加深对分类规则的理解。</p>
-        <p id="aboutP2">页面提供中 / 韩双语界面，适用于学习、课堂演示或基础宣传使用。</p>
-        <h3 id="guideTitle">使用指南</h3>
-        <ul class="guide-list">
-          <li id="guide1">通过顶部标签切换“查询分类 / 分类练习 / 关于网页”。</li>
-          <li id="guide2">在查询页面输入垃圾名称即可查看对应分类。</li>
-          <li id="guide3">在练习页面进行 20 道分类练习，系统会给出简单反馈。</li>
-          <li id="guide4">右上角可在中文和韩语界面之间切换。</li>
+    <div class="game-layout">
+      <!-- 左侧说明 -->
+      <aside class="game-status-card">
+        <strong id="gameRulesTitle">操作说明</strong>
+        <ul class="game-intro-list">
+          <li id="rule1">系统随机出现一个垃圾名称</li>
+          <li id="rule2">选择你认为正确的分类</li>
+          <li id="rule3">答对加分，答错扣分</li>
         </ul>
-      </div>
-    </section>
-  </main>
 
-  <script>
-    // ---- 数据 ----
-    const trashDB = {
-      "香蕉皮":"kitchen","剩饭":"kitchen","菜叶":"kitchen","鸡骨头":"kitchen","苹果核":"kitchen",
-      "塑料瓶":"recycle","纸盒":"recycle","纸箱":"recycle","玻璃瓶":"recycle","易拉罐":"recycle",
-      "电池":"hazard","药片":"hazard","灯泡":"hazard","荧光灯管":"hazard",
-      "纸巾":"other","灰尘":"other","破瓷片":"other","一次性筷子":"other"
+        <div class="game-status-row">
+          <div class="status-tag" id="badgeScore">
+            <span id="labelScore">分数：</span><strong id="gameScoreValue">0</strong>
+          </div>
+          <div class="status-tag" id="badgeRound">
+            <span id="labelRound">题目：</span><strong id="gameRoundValue">0</strong> /
+            <span id="gameMaxRound">20</span>
+          </div>
+          <div class="status-tag" id="badgeLives">
+            <span id="labelLives">剩余：</span><strong id="gameLivesValue">5</strong>
+          </div>
+        </div>
+
+        <div class="game-btn-row">
+          <button class="btn-outline" id="btnStartGame">开始练习</button>
+          <button class="btn-outline" id="btnSkip">跳过</button>
+          <button class="btn-outline btn-outline-danger" id="btnReveal">显示答案</button>
+        </div>
+      </aside>
+
+      <!-- 右侧游戏区 -->
+      <section class="game-area">
+        <p class="card-subtitle" id="currentTrashLabel">当前垃圾：</p>
+        <div id="gameTrashItem" class="game-trash-item">点击“开始练习”以开始</div>
+
+        <div class="bins-grid">
+          <button class="bin" data-category="recycle" id="binRecycle">♻️ 可回收物</button>
+          <button class="bin" data-category="kitchen" id="binKitchen">🥕 厨余垃圾</button>
+          <button class="bin" data-category="hazard" id="binHazard">☠️ 有害垃圾</button>
+          <button class="bin" data-category="other" id="binOther">🗑️ 其他垃圾</button>
+        </div>
+
+        <div id="gameFeedback" class="game-feedback">准备就绪</div>
+      </section>
+    </div>
+  </section>
+
+  <!-- 关于网页 -->
+  <section id="about-section" class="card hidden">
+    <header>
+      <h2 class="card-title">ℹ️ <span id="aboutTitleText">关于网页</span></h2>
+      <p class="card-subtitle" id="aboutSubtitleText">简要说明本网页的功能与使用方式。</p>
+    </header>
+
+    <div class="about-text">
+      <p id="aboutP1">
+        本网页用于帮助用户快速查询生活垃圾的分类结果，并通过练习模块加深对分类规则的理解。
+      </p>
+      <p id="aboutP2">
+        页面提供中 / 韩双语界面，适用于学习、课堂展示或日常宣传使用。
+      </p>
+      <h3 id="guideTitle">使用指南</h3>
+      <ul class="guide-list">
+        <li id="guide1">通过顶部标签切换“查询分类 / 分类练习 / 关于网页”。</li>
+        <li id="guide2">在查询页面输入垃圾名称即可查看对应分类。</li>
+        <li id="guide3">在练习页面完成 20 道题目，系统会给出简单反馈。</li>
+        <li id="guide4">右上角可在中文与韩语界面之间切换。</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ------- 数据 -------
+  const trashDB = {
+    "香蕉皮":"kitchen","剩饭":"kitchen","菜叶":"kitchen","鸡骨头":"kitchen","苹果核":"kitchen",
+    "塑料瓶":"recycle","纸盒":"recycle","纸箱":"recycle","玻璃瓶":"recycle","易拉罐":"recycle",
+    "电池":"hazard","药片":"hazard","灯泡":"hazard","荧光灯管":"hazard",
+    "纸巾":"other","灰尘":"other","破瓷片":"other","一次性筷子":"other"
+  };
+  const trashList = Object.keys(trashDB);
+  const MAX_ROUNDS = 20;
+
+  const i18n = {
+    zh:{
+      title:"生活垃圾分类助手",
+      subtitle:"快速查询垃圾类别，提高分类准确性",
+      navSearch:"查询分类",navGame:"分类练习",navAbout:"关于网页",
+      searchTitle:"垃圾分类查询",
+      searchSubtitle:"输入垃圾名称，系统将自动匹配对应分类。",
+      searchPlaceholder:"请输入垃圾名称，例如：香蕉皮、纸盒、电池...",
+      searchBtn:"搜索",
+      resultEmpty:"请在上方输入垃圾名称以查看分类结果。",
+      todayQuery:"今日查询：",
+      gameTitle:"分类练习",
+      gameSubtitle:"通过练习提升对垃圾分类规则的理解。",
+      rulesTitle:"操作说明",
+      rule1:"系统随机出现一个垃圾名称",
+      rule2:"选择你认为正确的分类",
+      rule3:"答对加分，答错扣分",
+      labelScore:"分数：",
+      labelRound:"题目：",
+      labelLives:"剩余：",
+      currentTrash:"当前垃圾：",
+      clickStart:"点击“开始练习”以开始",
+      gameReady:"准备就绪",
+      chooseCategory:"请选择分类",
+      recycle:"可回收物",
+      kitchen:"厨余垃圾",
+      hazard:"有害垃圾",
+      other:"其他垃圾",
+      btnStart:"开始练习",
+      btnSkip:"跳过",
+      btnReveal:"显示答案",
+      correct:"回答正确。",
+      wrong:"回答错误。",
+      finishedTitle:"练习完成",
+      finishedSummary:(s,m)=>`你完成了 ${m} 道题，共得分 ${s} 分。`,
+      finishedTip:"可以重新开始练习以进一步巩固对分类规则的理解。",
+      aboutTitle:"关于网页",
+      aboutSubtitle:"简要说明本网页的功能与使用方式。",
+      aboutP1:"本网页用于帮助用户快速查询生活垃圾的分类结果，并通过练习模块加深对分类规则的理解。",
+      aboutP2:"页面提供中 / 韩双语界面，适用于学习、课堂展示或日常宣传使用。",
+      guideTitle:"使用指南",
+      g1:"通过顶部标签切换“查询分类 / 分类练习 / 关于网页”。",
+      g2:"在查询页面输入垃圾名称即可查看对应分类。",
+      g3:"在练习页面完成 20 道题目，系统会给出简单反馈。",
+      g4:"右上角可在中文与韩语界面之间切换。"
+    },
+    ko:{
+      title:"생활 쓰레기 분류 도우미",
+      subtitle:"쓰레기 종류를 빠르게 조회하여 정확성을 높입니다",
+      navSearch:"분류 조회",navGame:"분류 연습",navAbout:"웹페이지 소개",
+      searchTitle:"쓰레기 분류 조회",
+      searchSubtitle:"쓰레기 이름을 입력하면 자동으로 분류 결과를 안내합니다.",
+      searchPlaceholder:"예: 바나나 껍질, 상자, 건전지 등",
+      searchBtn:"검색",
+      resultEmpty:"위에 쓰레기 이름을 입력해 분류 결과를 확인하세요.",
+      todayQuery:"오늘 조회：",
+      gameTitle:"분류 연습",
+      gameSubtitle:"연습을 통해 분류 규칙을 쉽게 익힐 수 있습니다.",
+      rulesTitle:"사용 설명",
+      rule1:"시스템이 무작위로 쓰레기 이름을 제시합니다",
+      rule2:"올바른 분류를 선택하세요",
+      rule3:"정답이면 점수 상승, 오답이면 감점됩니다",
+      labelScore:"점수：",
+      labelRound:"문제：",
+      labelLives:"남은 횟수：",
+      currentTrash:"현재 쓰레기：",
+      clickStart:"‘연습 시작’을 눌러 시작하세요",
+      gameReady:"준비 완료",
+      chooseCategory:"분류를 선택하세요",
+      recycle:"재활용",
+      kitchen:"음식물 쓰레기",
+      hazard:"유해 쓰레기",
+      other:"기타 쓰레기",
+      btnStart:"연습 시작",
+      btnSkip:"건너뛰기",
+      btnReveal:"정답 보기",
+      correct:"정답입니다.",
+      wrong:"오답입니다.",
+      finishedTitle:"연습 완료",
+      finishedSummary:(s,m)=>`총 ${m}문제 중 ${s}점을 획득했습니다.`,
+      finishedTip:"다시 연습하여 분류 규칙을 더 잘 이해할 수 있습니다.",
+      aboutTitle:"웹페이지 소개",
+      aboutSubtitle:"이 웹페이지의 주요 기능과 사용 방법을 설명합니다.",
+      aboutP1:"이 웹페이지는 일상 생활에서 자주 접하는 쓰레기의 분류 결과를 빠르게 조회할 수 있도록 도와줍니다.",
+      aboutP2:"중국어 / 한국어 이중 언어 인터페이스를 제공하여 학습과 수업에 활용할 수 있습니다.",
+      guideTitle:"사용 안내",
+      g1:"상단 탭에서 ‘분류 조회 / 분류 연습 / 웹페이지 소개’를 선택하세요.",
+      g2:"조회 페이지에서 쓰레기 이름을 입력하면 분류 결과를 볼 수 있습니다.",
+      g3:"연습 페이지에서 20문제를 풀며 간단한 피드백을 받을 수 있습니다.",
+      g4:"오른쪽 상단 버튼으로 언어를 전환할 수 있습니다."
+    }
+  };
+
+  let currentLang = "zh";
+  let searchCount = 0;
+  const gameState = {score:0, round:0, lives:5, current:null, started:false, ended:false};
+
+  window.addEventListener("DOMContentLoaded", () => {
+    // DOM 缓存
+    const els = {
+      logoTitle:document.querySelector(".logo-title"),
+      logoSubtitle:document.querySelector(".logo-subtitle"),
+      langZhBtn:document.getElementById("langZhBtn"),
+      langKoBtn:document.getElementById("langKoBtn"),
+      navSearchBtn:document.getElementById("navSearchBtn"),
+      navGameBtn:document.getElementById("navGameBtn"),
+      navAboutBtn:document.getElementById("navAboutBtn"),
+      searchTitleText:document.getElementById("searchTitleText"),
+      searchSubtitleText:document.getElementById("searchSubtitleText"),
+      searchInput:document.getElementById("searchInput"),
+      searchBtn:document.getElementById("searchBtn"),
+      suggestionList:document.getElementById("suggestionList"),
+      resultEmptyText:document.getElementById("resultEmptyText"),
+      resultContent:document.getElementById("resultContent"),
+      statSearchCount:document.getElementById("statSearchCount"),
+
+      gameTitleText:document.getElementById("gameTitleText"),
+      gameSubtitleText:document.getElementById("gameSubtitleText"),
+      gameRulesTitle:document.getElementById("gameRulesTitle"),
+      rule1:document.getElementById("rule1"),
+      rule2:document.getElementById("rule2"),
+      rule3:document.getElementById("rule3"),
+      labelScore:document.getElementById("labelScore"),
+      labelRound:document.getElementById("labelRound"),
+      labelLives:document.getElementById("labelLives"),
+      scoreValue:document.getElementById("gameScoreValue"),
+      roundValue:document.getElementById("gameRoundValue"),
+      livesValue:document.getElementById("gameLivesValue"),
+      badgeScore:document.getElementById("badgeScore"),
+      badgeRound:document.getElementById("badgeRound"),
+      badgeLives:document.getElementById("badgeLives"),
+      btnStartGame:document.getElementById("btnStartGame"),
+      btnSkip:document.getElementById("btnSkip"),
+      btnReveal:document.getElementById("btnReveal"),
+      currentTrashLabel:document.getElementById("currentTrashLabel"),
+      gameTrashItem:document.getElementById("gameTrashItem"),
+      gameFeedback:document.getElementById("gameFeedback"),
+      binRecycle:document.getElementById("binRecycle"),
+      binKitchen:document.getElementById("binKitchen"),
+      binHazard:document.getElementById("binHazard"),
+      binOther:document.getElementById("binOther"),
+
+      aboutTitleText:document.getElementById("aboutTitleText"),
+      aboutSubtitleText:document.getElementById("aboutSubtitleText"),
+      aboutP1:document.getElementById("aboutP1"),
+      aboutP2:document.getElementById("aboutP2"),
+      guideTitle:document.getElementById("guideTitle"),
+      guide1:document.getElementById("guide1"),
+      guide2:document.getElementById("guide2"),
+      guide3:document.getElementById("guide3"),
+      guide4:document.getElementById("guide4")
     };
-    const trashList = Object.keys(trashDB);
-    const MAX_ROUNDS = 20;
 
-    const i18n = {
-      zh:{
-        title:"生活垃圾分类助手",
-        subtitle:"快速查询垃圾类别，提高分类准确性",
-        navSearch:"查询分类",navGame:"分类练习",navAbout:"关于网页",
-        searchTitle:"垃圾分类查询",
-        searchSubtitle:"输入垃圾名称，系统将自动匹配对应分类。",
-        searchPlaceholder:"请输入垃圾名称，例如：香蕉皮、纸盒、电池...",
-        searchBtn:"搜索",
-        resultEmpty:"请在上方输入垃圾名称以查看分类结果。",
-        todayQuery:"今日查询：",
-        gameTitle:"分类练习",
-        gameSubtitle:"通过练习提升对垃圾分类规则的理解。",
-        rulesTitle:"操作说明",
-        rule1:"系统随机出现一个垃圾名称",
-        rule2:"选择你认为正确的分类",
-        rule3:"答对加分，答错扣分",
-        labelScore:"分数：",
-        labelRound:"题目：",
-        labelLives:"剩余：",
-        currentTrash:"当前垃圾：",
-        clickStart:"点击“开始练习”以开始",
-        gameReady:"准备就绪",
-        chooseCategory:"请选择分类",
-        recycle:"可回收物",
-        kitchen:"厨余垃圾",
-        hazard:"有害垃圾",
-        other:"其他垃圾",
-        btnStart:"开始练习",
-        btnSkip:"跳过",
-        btnReveal:"显示答案",
-        correct:"回答正确。",
-        wrong:"回答错误。",
-        finishedTitle:"练习完成",
-        finishedSummary:(s,m)=>`你完成了 ${m} 道题，共得分 ${s} 分。`,
-        finishedTip:"可以重新开始练习以进一步巩固对分类规则的理解。",
-        aboutTitle:"关于网页",
-        aboutSubtitle:"简要说明本网页的功能与使用方式。",
-        aboutP1:"本网页用于帮助用户快速查询生活垃圾的分类结果，并通过练习模块加深对分类规则的理解。",
-        aboutP2:"页面提供中 / 韩双语界面，适用于学习、课堂演示或基础宣传使用。",
-        guideTitle:"使用指南",
-        g1:"通过顶部标签切换“查询分类 / 分类练习 / 关于网页”。",
-        g2:"在查询页面输入垃圾名称即可查看对应分类。",
-        g3:"在练习页面进行 20 道分类练习，系统会给出简单反馈。",
-        g4:"右上角可在中文和韩语界面之间切换。"
-      },
-      ko:{
-        title:"생활 쓰레기 분류 도우미",
-        subtitle:"쓰레기 종류를 빠르게 조회하여 정확성을 높입니다",
-        navSearch:"분류 조회",navGame:"분류 연습",navAbout:"웹페이지 소개",
-        searchTitle:"쓰레기 분류 조회",
-        searchSubtitle:"쓰레기 이름을 입력하면 자동으로 분류 결과를 안내합니다.",
-        searchPlaceholder:"예: 바나나 껍질, 상자, 건전지 등",
-        searchBtn:"검색",
-        resultEmpty:"위에 쓰레기 이름을 입력해 분류 결과를 확인하세요.",
-        todayQuery:"오늘 조회：",
-        gameTitle:"분류 연습",
-        gameSubtitle:"연습을 통해 분류 규칙을 쉽게 익힐 수 있습니다.",
-        rulesTitle:"사용 설명",
-        rule1:"시스템이 무작위로 쓰레기 이름을 제시합니다",
-        rule2:"올바른 분류를 선택하세요",
-        rule3:"정답이면 점수 상승, 오답이면 감점됩니다",
-        labelScore:"점수：",
-        labelRound:"문제：",
-        labelLives:"남은 횟수：",
-        currentTrash:"현재 쓰레기：",
-        clickStart:"‘연습 시작’을 눌러 시작하세요",
-        gameReady:"준비 완료",
-        chooseCategory:"분류를 선택하세요",
-        recycle:"재활용",
-        kitchen:"음식물 쓰레기",
-        hazard:"유해 쓰레기",
-        other:"기타 쓰레기",
-        btnStart:"연습 시작",
-        btnSkip:"건너뛰기",
-        btnReveal:"정답 보기",
-        correct:"정답입니다.",
-        wrong:"오답입니다.",
-        finishedTitle:"연습 완료",
-        finishedSummary:(s,m)=>`총 ${m}문제 중 ${s}점을 획득했습니다.`,
-        finishedTip:"다시 연습하여 분류 규칙을 더 잘 이해할 수 있습니다.",
-        aboutTitle:"웹페이지 소개",
-        aboutSubtitle:"이 웹페이지의 주요 기능과 사용 방법을 설명합니다.",
-        aboutP1:"이 웹페이지는 일상 생활에서 자주 접하는 쓰레기의 분류 결과를 빠르게 조회할 수 있도록 도와줍니다.",
-        aboutP2:"중국어 / 한국어 이중 언어 인터페이스를 제공하여 학습과 수업에 활용할 수 있습니다.",
-        guideTitle:"사용 안내",
-        g1:"상단 탭에서 ‘분류 조회 / 분류 연습 / 웹페이지 소개’를 선택하세요.",
-        g2:"조회 페이지에서 쓰레기 이름을 입력하면 분류 결과를 볼 수 있습니다.",
-        g3:"연습 페이지에서 20문제를 풀며 간단한 피드백을 받을 수 있습니다.",
-        g4:"오른쪽 상단 버튼으로 언어를 전환할 수 있습니다."
-      }
-    };
+    function applyLanguage(lang){
+      currentLang = lang;
+      const t = i18n[lang];
 
-    let currentLang = "zh";
-    let searchCount = 0;
+      els.logoTitle.textContent = t.title;
+      els.logoSubtitle.textContent = t.subtitle;
 
-    const state = {
-      score:0,
-      round:0,
-      lives:5,
-      current:null,
-      started:false,
-      ended:false
-    };
+      els.navSearchBtn.textContent = t.navSearch;
+      els.navGameBtn.textContent = t.navGame;
+      els.navAboutBtn.textContent = t.navAbout;
 
-    window.addEventListener("DOMContentLoaded", () => {
-      // DOM 元素缓存
-      const els = {
-        logoTitle:document.querySelector(".logo-title"),
-        logoSubtitle:document.querySelector(".logo-subtitle"),
-        langZhBtn:document.getElementById("langZhBtn"),
-        langKoBtn:document.getElementById("langKoBtn"),
-        navSearchBtn:document.getElementById("navSearchBtn"),
-        navGameBtn:document.getElementById("navGameBtn"),
-        navAboutBtn:document.getElementById("navAboutBtn"),
-        searchTitleText:document.getElementById("searchTitleText"),
-        searchSubtitleText:document.getElementById("searchSubtitleText"),
-        searchInput:document.getElementById("searchInput"),
-        searchBtn:document.getElementById("searchBtn"),
-        suggestionList:document.getElementById("suggestionList"),
-        resultEmptyText:document.getElementById("resultEmptyText"),
-        resultContent:document.getElementById("resultContent"),
-        statSearchCount:document.getElementById("statSearchCount"),
+      els.searchTitleText.textContent = t.searchTitle;
+      els.searchSubtitleText.textContent = t.searchSubtitle;
+      els.searchInput.placeholder = t.searchPlaceholder;
+      els.searchBtn.textContent = t.searchBtn;
+      els.resultEmptyText.textContent = t.resultEmpty;
+      els.statSearchCount.textContent =
+        `${t.todayQuery}${searchCount}${lang==="zh"?" 次":"회"}`;
 
-        gameTitleText:document.getElementById("gameTitleText"),
-        gameSubtitleText:document.getElementById("gameSubtitleText"),
-        gameRulesTitle:document.getElementById("gameRulesTitle"),
-        rule1:document.getElementById("rule1"),
-        rule2:document.getElementById("rule2"),
-        rule3:document.getElementById("rule3"),
-        labelScore:document.getElementById("labelScore"),
-        labelRound:document.getElementById("labelRound"),
-        labelLives:document.getElementById("labelLives"),
-        scoreValue:document.getElementById("gameScoreValue"),
-        roundValue:document.getElementById("gameRoundValue"),
-        livesValue:document.getElementById("gameLivesValue"),
-        badgeScore:document.getElementById("badgeScore"),
-        badgeRound:document.getElementById("badgeRound"),
-        badgeLives:document.getElementById("badgeLives"),
-        btnStartGame:document.getElementById("btnStartGame"),
-        btnSkip:document.getElementById("btnSkip"),
-        btnReveal:document.getElementById("btnReveal"),
-        currentTrashLabel:document.getElementById("currentTrashLabel"),
-        gameTrashItem:document.getElementById("gameTrashItem"),
-        gameFeedback:document.getElementById("gameFeedback"),
-        binRecycle:document.getElementById("binRecycle"),
-        binKitchen:document.getElementById("binKitchen"),
-        binHazard:document.getElementById("binHazard"),
-        binOther:document.getElementById("binOther"),
+      els.gameTitleText.textContent = t.gameTitle;
+      els.gameSubtitleText.textContent = t.gameSubtitle;
+      els.gameRulesTitle.textContent = t.rulesTitle;
+      els.rule1.textContent = t.rule1;
+      els.rule2.textContent = t.rule2;
+      els.rule3.textContent = t.rule3;
+      els.labelScore.textContent = t.labelScore;
+      els.labelRound.textContent = t.labelRound;
+      els.labelLives.textContent = t.labelLives;
+      els.currentTrashLabel.textContent = t.currentTrash;
 
-        aboutTitleText:document.getElementById("aboutTitleText"),
-        aboutSubtitleText:document.getElementById("aboutSubtitleText"),
-        aboutP1:document.getElementById("aboutP1"),
-        aboutP2:document.getElementById("aboutP2"),
-        guideTitle:document.getElementById("guideTitle"),
-        guide1:document.getElementById("guide1"),
-        guide2:document.getElementById("guide2"),
-        guide3:document.getElementById("guide3"),
-        guide4:document.getElementById("guide4")
-      };
+      els.btnStartGame.textContent = t.btnStart;
+      els.btnSkip.textContent = t.btnSkip;
+      els.btnReveal.textContent = t.btnReveal;
+      els.binRecycle.textContent = "♻️ " + t.recycle;
+      els.binKitchen.textContent = "🥕 " + t.kitchen;
+      els.binHazard.textContent = "☠️ " + t.hazard;
+      els.binOther.textContent = "🗑️ " + t.other;
 
-      function applyLanguage(lang){
-        currentLang = lang;
-        const t = i18n[lang];
+      els.aboutTitleText.textContent = t.aboutTitle;
+      els.aboutSubtitleText.textContent = t.aboutSubtitle;
+      els.aboutP1.textContent = t.aboutP1;
+      els.aboutP2.textContent = t.aboutP2;
+      els.guideTitle.textContent = t.guideTitle;
+      els.guide1.textContent = t.g1;
+      els.guide2.textContent = t.g2;
+      els.guide3.textContent = t.g3;
+      els.guide4.textContent = t.g4;
 
-        els.logoTitle.textContent = t.title;
-        els.logoSubtitle.textContent = t.subtitle;
+      els.langZhBtn.classList.toggle("active", lang==="zh");
+      els.langKoBtn.classList.toggle("active", lang==="ko");
 
-        els.navSearchBtn.textContent = t.navSearch;
-        els.navGameBtn.textContent = t.navGame;
-        els.navAboutBtn.textContent = t.navAbout;
-
-        els.searchTitleText.textContent = t.searchTitle;
-        els.searchSubtitleText.textContent = t.searchSubtitle;
-        els.searchInput.placeholder = t.searchPlaceholder;
-        els.searchBtn.textContent = t.searchBtn;
-        els.resultEmptyText.textContent = t.resultEmpty;
-        els.statSearchCount.textContent = `${t.todayQuery}${searchCount}${lang==="zh"?" 次":"회"}`;
-
-        els.gameTitleText.textContent = t.gameTitle;
-        els.gameSubtitleText.textContent = t.gameSubtitle;
-        els.gameRulesTitle.textContent = t.rulesTitle;
-        els.rule1.textContent = t.rule1;
-        els.rule2.textContent = t.rule2;
-        els.rule3.textContent = t.rule3;
-        els.labelScore.textContent = t.labelScore;
-        els.labelRound.textContent = t.labelRound;
-        els.labelLives.textContent = t.labelLives;
-        els.currentTrashLabel.textContent = t.currentTrash;
-
-        els.btnStartGame.textContent = t.btnStart;
-        els.btnSkip.textContent = t.btnSkip;
-        els.btnReveal.textContent = t.btnReveal;
-        els.binRecycle.textContent = "♻️ " + t.recycle;
-        els.binKitchen.textContent = "🥕 " + t.kitchen;
-        els.binHazard.textContent = "☠️ " + t.hazard;
-        els.binOther.textContent = "🗑️ " + t.other;
-
-        els.aboutTitleText.textContent = t.aboutTitle;
-        els.aboutSubtitleText.textContent = t.aboutSubtitle;
-        els.aboutP1.textContent = t.aboutP1;
-        els.aboutP2.textContent = t.aboutP2;
-        els.guideTitle.textContent = t.guideTitle;
-        els.guide1.textContent = t.g1;
-        els.guide2.textContent = t.g2;
-        els.guide3.textContent = t.g3;
-        els.guide4.textContent = t.g4;
-
-        els.langZhBtn.classList.toggle("active", lang==="zh");
-        els.langKoBtn.classList.toggle("active", lang==="ko");
-
-        // 如果游戏还没开始，用当前语言提示
-        if(!state.started || state.ended){
-          els.gameTrashItem.textContent = t.clickStart;
-          els.gameFeedback.textContent = t.gameReady;
-        }
-      }
-
-      // 语言按钮
-      els.langZhBtn.addEventListener("click", () => applyLanguage("zh"));
-      els.langKoBtn.addEventListener("click", () => applyLanguage("ko"));
-
-      // tab 切换
-      document.querySelectorAll(".tab-btn").forEach(btn=>{
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-          btn.classList.add("active");
-          const target = btn.getAttribute("data-target");
-          document.querySelectorAll("main section").forEach(sec=>sec.classList.add("hidden"));
-          document.getElementById(target).classList.remove("hidden");
-        });
-      });
-
-      // 搜索 & 自动补全
-      els.searchInput.addEventListener("input", () => {
-        const text = els.searchInput.value.trim();
-        if(!text){
-          els.suggestionList.classList.add("hidden");
-          return;
-        }
-        const list = trashList.filter(name => name.includes(text));
-        els.suggestionList.innerHTML = "";
-        list.forEach(name=>{
-          const li = document.createElement("li");
-          li.textContent = name;
-          li.addEventListener("click", () => {
-            els.searchInput.value = name;
-            els.suggestionList.classList.add("hidden");
-          });
-          els.suggestionList.appendChild(li);
-        });
-        els.suggestionList.classList.toggle("hidden", list.length===0);
-      });
-
-      function showResultNotFound(){
-        els.resultEmptyText.classList.remove("hidden");
-        els.resultContent.innerHTML = "<p>未找到该垃圾，请检查名称或补充数据库。</p>";
-      }
-
-      function showResult(name, categoryKey){
-        const t = i18n[currentLang];
-        const label = {
-          recycle:t.recycle,
-          kitchen:t.kitchen,
-          hazard:t.hazard,
-          other:t.other
-        }[categoryKey];
-        els.resultEmptyText.classList.add("hidden");
-        els.resultContent.innerHTML =
-          `<div class="result-title">${name}</div>
-           <div class="result-meta">${label}</div>`;
-      }
-
-      els.searchBtn.addEventListener("click", () => {
-        const t = i18n[currentLang];
-        const text = els.searchInput.value.trim();
-        if(!text) return;
-        searchCount++;
-        els.statSearchCount.textContent = `${t.todayQuery}${searchCount}${currentLang==="zh"?" 次":"회"}`;
-        if(!trashDB[text]){
-          showResultNotFound();
-        }else{
-          showResult(text, trashDB[text]);
-        }
-      });
-
-      // 游戏逻辑
-      function updateStatusBadges(){
-        els.scoreValue.textContent = state.score;
-        els.roundValue.textContent = state.round;
-        els.livesValue.textContent = state.lives;
-
-        [els.badgeScore, els.badgeRound, els.badgeLives].forEach(el=>{
-          el.classList.remove("badge-pulse");
-          void el.offsetWidth;
-          el.classList.add("badge-pulse");
-        });
-      }
-
-      function resetGame(){
-        state.score = 0;
-        state.round = 0;
-        state.lives = 5;
-        state.current = null;
-        state.started = true;
-        state.ended = false;
-        updateStatusBadges();
-      }
-
-      function nextRound(){
-        const t = i18n[currentLang];
-        if(state.lives<=0 || state.round>=MAX_ROUNDS){
-          state.ended = true;
-          els.gameFeedback.className = "game-feedback game-end";
-          els.gameFeedback.innerHTML =
-            `<strong>${t.finishedTitle}</strong><br>${t.finishedSummary(state.score,MAX_ROUNDS)}<br>${t.finishedTip}`;
-          els.gameTrashItem.textContent = "";
-          return;
-        }
-        state.round++;
-        updateStatusBadges();
-        state.current = trashList[Math.floor(Math.random()*trashList.length)];
-        els.gameTrashItem.textContent = state.current;
-        els.gameFeedback.className = "game-feedback";
-        els.gameFeedback.textContent = t.chooseCategory;
-      }
-
-      function startGame(){
-        const t = i18n[currentLang];
-        resetGame();
+      if(!gameState.started || gameState.ended){
+        els.gameTrashItem.textContent = t.clickStart;
         els.gameFeedback.textContent = t.gameReady;
-        nextRound();
       }
+    }
 
-      function checkAnswer(category){
-        if(!state.started || state.ended || !state.current) return;
-        const t = i18n[currentLang];
-        if(trashDB[state.current] === category){
-          state.score++;
-          els.gameFeedback.className = "game-feedback feedback-correct";
-          els.gameFeedback.textContent = t.correct;
-        }else{
-          state.lives--;
-          els.gameFeedback.className = "game-feedback feedback-wrong";
-          els.gameFeedback.textContent = t.wrong;
-        }
-        updateStatusBadges();
-        setTimeout(nextRound, 600);
-      }
+    // 语言按钮
+    els.langZhBtn.addEventListener("click",()=>applyLanguage("zh"));
+    els.langKoBtn.addEventListener("click",()=>applyLanguage("ko"));
 
-      els.btnStartGame.addEventListener("click", startGame);
-      els.btnSkip.addEventListener("click", ()=>{ if(state.started && !state.ended) nextRound(); });
-      els.btnReveal.addEventListener("click", () => {
-        if(!state.current) return;
-        const t = i18n[currentLang];
-        const catKey = trashDB[state.current];
-        const label = {
-          recycle:t.recycle,
-          kitchen:t.kitchen,
-          hazard:t.hazard,
-          other:t.other
-        }[catKey];
-        els.gameFeedback.className = "game-feedback";
-        els.gameFeedback.textContent = `${state.current} → ${label}`;
+    // Tab 切换
+    document.querySelectorAll(".tab-btn").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const target=btn.dataset.target;
+        document.querySelectorAll("main section").forEach(sec=>sec.classList.add("hidden"));
+        document.getElementById(target).classList.remove("hidden");
       });
-
-      [els.binRecycle,els.binKitchen,els.binHazard,els.binOther].forEach(btn=>{
-        btn.addEventListener("click", () => {
-          checkAnswer(btn.getAttribute("data-category"));
-        });
-      });
-
-      // 初始化
-      applyLanguage("zh");
-      updateStatusBadges();
     });
-  </script>
+
+    // 搜索 + 自动补全
+    els.searchInput.addEventListener("input",()=>{
+      const text = els.searchInput.value.trim();
+      if(!text){
+        els.suggestionList.classList.add("hidden");
+        return;
+      }
+      const list = trashList.filter(n=>n.includes(text));
+      els.suggestionList.innerHTML = "";
+      list.forEach(n=>{
+        const li=document.createElement("li");
+        li.textContent=n;
+        li.addEventListener("click",()=>{
+          els.searchInput.value=n;
+          els.suggestionList.classList.add("hidden");
+        });
+        els.suggestionList.appendChild(li);
+      });
+      els.suggestionList.classList.toggle("hidden", list.length===0);
+    });
+
+    function showResult(name, catKey){
+      const t = i18n[currentLang];
+      const labelMap = {
+        recycle:t.recycle,kitchen:t.kitchen,
+        hazard:t.hazard,other:t.other
+      };
+      els.resultEmptyText.classList.add("hidden");
+      els.resultContent.innerHTML =
+        `<div class="result-title">${name}</div>
+         <div class="result-meta">${labelMap[catKey]}</div>`;
+    }
+
+    function showNotFound(){
+      els.resultEmptyText.classList.remove("hidden");
+      els.resultContent.innerHTML =
+        "<p>未找到该垃圾，请检查名称或补充数据库。</p>";
+    }
+
+    els.searchBtn.addEventListener("click",()=>{
+      const t = i18n[currentLang];
+      const text = els.searchInput.value.trim();
+      if(!text)return;
+      searchCount++;
+      els.statSearchCount.textContent =
+        `${t.todayQuery}${searchCount}${currentLang==="zh"?" 次":"회"}`;
+      if(!trashDB[text]) showNotFound();
+      else showResult(text, trashDB[text]);
+    });
+
+    // 游戏逻辑
+    function updateBadges(){
+      els.scoreValue.textContent = gameState.score;
+      els.roundValue.textContent = gameState.round;
+      els.livesValue.textContent = gameState.lives;
+      [els.badgeScore,els.badgeRound,els.badgeLives].forEach(el=>{
+        el.classList.remove("badge-pulse");
+        void el.offsetWidth;
+        el.classList.add("badge-pulse");
+      });
+    }
+
+    function resetGame(){
+      gameState.score = 0;
+      gameState.round = 0;
+      gameState.lives = 5;
+      gameState.current = null;
+      gameState.started = true;
+      gameState.ended = false;
+      updateBadges();
+    }
+
+    function nextRound(){
+      const t = i18n[currentLang];
+      if(gameState.lives<=0 || gameState.round>=MAX_ROUNDS){
+        gameState.ended = true;
+        els.gameFeedback.className = "game-feedback game-end";
+        els.gameFeedback.innerHTML =
+          `<strong>${t.finishedTitle}</strong><br>${t.finishedSummary(gameState.score,MAX_ROUNDS)}<br>${t.finishedTip}`;
+        els.gameTrashItem.textContent="";
+        return;
+      }
+      gameState.round++;
+      updateBadges();
+      gameState.current = trashList[Math.floor(Math.random()*trashList.length)];
+      els.gameTrashItem.textContent = gameState.current;
+      els.gameFeedback.className="game-feedback";
+      els.gameFeedback.textContent = t.chooseCategory;
+    }
+
+    function startGame(){
+      const t = i18n[currentLang];
+      resetGame();
+      els.gameFeedback.textContent = t.gameReady;
+      nextRound();
+    }
+
+    function checkAnswer(cat){
+      if(!gameState.started || gameState.ended || !gameState.current) return;
+      const t = i18n[currentLang];
+      if(trashDB[gameState.current]===cat){
+        gameState.score++;
+        els.gameFeedback.className="game-feedback feedback-correct";
+        els.gameFeedback.textContent=t.correct;
+      }else{
+        gameState.lives--;
+        els.gameFeedback.className="game-feedback feedback-wrong";
+        els.gameFeedback.textContent=t.wrong;
+      }
+      updateBadges();
+      setTimeout(nextRound,600);
+    }
+
+    els.btnStartGame.addEventListener("click",startGame);
+    els.btnSkip.addEventListener("click",()=>{if(gameState.started&&!gameState.ended)nextRound();});
+    els.btnReveal.addEventListener("click",()=>{
+      if(!gameState.current)return;
+      const t=i18n[currentLang];
+      const cat=trashDB[gameState.current];
+      const labelMap={recycle:t.recycle,kitchen:t.kitchen,hazard:t.hazard,other:t.other};
+      els.gameFeedback.className="game-feedback";
+      els.gameFeedback.textContent=`${gameState.current} → ${labelMap[cat]}`;
+    });
+
+    [els.binRecycle,els.binKitchen,els.binHazard,els.binOther].forEach(btn=>{
+      btn.addEventListener("click",()=>checkAnswer(btn.dataset.category));
+    });
+
+    // 初始化
+    applyLanguage("zh");
+    updateBadges();
+  });
+</script>
 </body>
 </html>
-
-
