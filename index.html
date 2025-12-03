@@ -2,260 +2,996 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
+  <title>生活垃圾分类助手 · Mint</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>生活垃圾分类助手</title>
 
   <style>
-    body {
-      margin: 0;
-      background: #f5f7fb;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      background:#e9fff4;
+      color:#1f2933;
+    }
+    .hidden{display:none!important;}
+
+    /* 布局 */
+    .app{
+      min-height:100vh;
+      display:flex;
+    }
+    .sidebar{
+      width:250px;
+      background:linear-gradient(180deg,#b9f3d2,#6fd3a8);
+      padding:24px 20px;
+      display:flex;
+      flex-direction:column;
+      color:#064b35;
+    }
+    .logo-area{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:24px;
+    }
+    .logo-icon{
+      width:40px;height:40px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+    }
+    .logo-text-title{
+      font-size:18px;font-weight:700;
+    }
+    .logo-text-sub{
+      font-size:12px;opacity:0.8;
     }
 
-    /* 顶部栏 */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 32px;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    .nav{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .nav-item{
+      border:none;
+      background:transparent;
+      padding:10px 12px;
+      text-align:left;
+      border-radius:10px;
+      font-size:14px;
+      cursor:pointer;
+      color:#064b35;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      transition:.18s;
+    }
+    .nav-item span.icon{
+      font-size:17px;
+    }
+    .nav-item:hover{
+      background:rgba(255,255,255,0.35);
+    }
+    .nav-item.active{
+      background:#ffffff;
+      box-shadow:0 8px 18px rgba(0,0,0,0.08);
+      color:#0b5f46;
+      font-weight:600;
     }
 
-    .top-title {
-      font-size: 20px;
-      font-weight: bold;
+    .sidebar-bottom{
+      margin-top:auto;
+      font-size:11px;
+      opacity:0.8;
     }
 
-    /* 语言切换按钮 */
-    .lang-switch span {
-      margin-left: 12px;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 6px;
+    .lang-toggle{
+      margin-top:16px;
+      display:flex;
+      gap:8px;
     }
-    .lang-active {
-      background: #dce6ff;
-      color: #2457ff;
-      font-weight: bold;
+    .lang-btn{
+      flex:1;
+      border-radius:999px;
+      border:none;
+      padding:6px 10px;
+      font-size:12px;
+      cursor:pointer;
+      background:rgba(255,255,255,0.25);
+      color:#064b35;
+      transition:.16s;
     }
-
-    /* Tabs */
-    .tabs {
-      margin: 20px auto;
-      width: 80%;
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-    }
-    .tab {
-      padding: 12px 40px;
-      border-radius: 30px;
-      background: white;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .tab-active {
-      background: #dfe9ff;
-      color: #2a62ff;
-      font-weight: bold;
+    .lang-btn.active{
+      background:#ffffff;
+      font-weight:600;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
     }
 
-    /* 页面通用卡片 */
-    .card {
-      width: 80%;
-      margin: 20px auto;
-      padding: 32px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    /* 主体 */
+    .main{
+      flex:1;
+      padding:24px 28px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
     }
-    .hidden { display: none; }
-
-    /* 搜索框 */
-    .search-box {
-      display: flex;
-      background: #eef3ff;
-      padding: 14px 20px;
-      border-radius: 40px;
+    .page-title{
+      font-size:22px;
+      font-weight:700;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 17px;
-    }
-    .search-btn {
-      padding: 10px 20px;
-      background: #6ea2ff;
-      color: white;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .search-btn:hover {
-      background: #4a84ff;
+    .page-subtitle{
+      font-size:13px;
+      color:#4b5563;
     }
 
-    /* 结果区域 */
-    .result-box {
-      margin-top: 20px;
-      padding: 20px;
-      background: #f8f9ff;
-      border-radius: 12px;
-      min-height: 60px;
-      font-size: 17px;
+    .panel{
+      background:#f7fffb;
+      border-radius:18px;
+      padding:18px 20px;
+      box-shadow:0 10px 24px rgba(15,23,42,0.1);
+    }
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .panel-title{
+      font-size:15px;font-weight:600;
+    }
+
+    /* 搜索区域 */
+    .search-row{
+      position:relative;
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .search-input-wrap{
+      position:relative;
+      flex:1;
+      min-width:200px;
+    }
+    .search-input{
+      width:100%;
+      padding:11px 14px 11px 36px;
+      border-radius:999px;
+      border:1px solid #c9eedc;
+      font-size:14px;
+      background:#ffffff;
+      box-shadow:0 6px 16px rgba(15,23,42,0.06);
+      outline:none;
+      transition:.16s;
+    }
+    .search-input:focus{
+      border-color:#3cbf8a;
+      box-shadow:0 8px 22px rgba(60,191,138,0.25);
+    }
+    .search-input-icon{
+      position:absolute;
+      left:12px;top:9px;
+      font-size:16px;
+      opacity:.55;
+    }
+    .search-btn{
+      border:none;
+      border-radius:999px;
+      padding:10px 20px;
+      font-size:14px;
+      cursor:pointer;
+      background:#3cbf8a;
+      color:#ffffff;
+      box-shadow:0 10px 22px rgba(60,191,138,0.4);
+      transition:.16s;
+      white-space:nowrap;
+    }
+    .search-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 26px rgba(60,191,138,0.55);
+    }
+
+    .suggest-list{
+      position:absolute;
+      top:40px;
+      left:0;right:0;
+      background:#ffffff;
+      border-radius:12px;
+      box-shadow:0 12px 24px rgba(15,23,42,0.16);
+      list-style:none;
+      margin:0;
+      padding:6px 0;
+      z-index:20;
+      border:1px solid #d7efe3;
+      max-height:220px;
+      overflow:auto;
+    }
+    .suggest-list li{
+      padding:6px 12px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    .suggest-list li:hover{
+      background:#e9fff4;
+    }
+
+    /* 结果卡片 */
+    .result-wrapper{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .result-card{
+      border-radius:16px;
+      background:#ffffff;
+      padding:14px 16px;
+      border:1px solid #d8f1e3;
+      box-shadow:0 8px 20px rgba(15,23,42,0.08);
+    }
+    .result-name{
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    .result-category-label{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#e1f7ee;
+      color:#0b5f46;
+      margin-bottom:6px;
+    }
+    .result-desc{
+      font-size:13px;
+      color:#4b5563;
+    }
+    .result-empty{
+      font-size:13px;
+      color:#6b7280;
+    }
+
+    /* 历史记录 */
+    .history-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:6px;
+    }
+    .history-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .history-item{
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:12px;
+      background:#ffffff;
+      border:1px solid #d3efe1;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .history-item:hover{
+      background:#dff7ec;
+    }
+    .history-empty{
+      font-size:12px;
+      color:#9ca3af;
+    }
+    .btn-link{
+      border:none;
+      background:transparent;
+      font-size:12px;
+      color:#0b8461;
+      cursor:pointer;
+      text-decoration:underline;
+    }
+
+    /* 分类说明 */
+    .category-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:14px;
+      margin-top:10px;
+    }
+    .category-card{
+      border-radius:16px;
+      background:#ffffff;
+      padding:14px 14px 12px;
+      border:1px solid #d8f1e3;
+      box-shadow:0 8px 20px rgba(15,23,42,0.08);
+      font-size:13px;
+    }
+    .category-title{
+      font-size:14px;font-weight:600;
+      margin-bottom:6px;
+      display:flex;align-items:center;gap:6px;
+    }
+    .category-desc{
+      color:#4b5563;
+      margin-bottom:6px;
+    }
+    .category-examples{
+      font-size:12px;
+      color:#6b7280;
+    }
+
+    /* 关于 */
+    .about-body{
+      margin-top:8px;
+      font-size:14px;
+      line-height:1.7;
+      color:#374151;
+    }
+    .about-list{
+      margin-top:8px;
+      font-size:13px;
+      padding-left:18px;
+      color:#4b5563;
+    }
+
+    /* 顶部小提示 */
+    .top-tip{
+      font-size:12px;
+      color:#6b7280;
+    }
+
+    /* 响应式 */
+    @media(max-width:900px){
+      .app{
+        flex-direction:column;
+      }
+      .sidebar{
+        width:100%;
+        flex-direction:row;
+        align-items:center;
+        padding:12px 16px;
+      }
+      .logo-area{
+        margin-bottom:0;
+        flex:1;
+      }
+      .nav{
+        flex-direction:row;
+        gap:4px;
+        margin:0 10px;
+      }
+      .nav-item{
+        font-size:12px;
+        padding:6px 8px;
+      }
+      .sidebar-bottom{
+        display:none;
+      }
+      .lang-toggle{
+        margin-top:0;
+      }
+      .main{
+        padding:16px 14px 24px;
+      }
     }
   </style>
 </head>
-
 <body>
-
-  <!-- 顶部栏 -->
-  <div class="topbar">
-    <div id="titleText" class="top-title">📦 生活垃圾分类助手</div>
-    <div class="lang-switch">
-      <span id="langZH" class="lang-active">中文</span>
-      <span id="langKR">한국어</span>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tabs">
-    <div id="tabSearch" class="tab tab-active">查询分类</div>
-    <div id="tabAbout" class="tab">关于网页</div>
-  </div>
-
-  <!-- 查询页面 -->
-  <div id="pageSearch" class="card">
-    <div class="search-box">
-      <input id="searchInput" placeholder="请输入垃圾名称，例如：香蕉皮、纸盒、电池…">
-      <div id="searchBtn" class="search-btn">搜索</div>
+<div class="app">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">♻️</div>
+      <div>
+        <div id="appTitle" class="logo-text-title">生活垃圾分类助手</div>
+        <div id="appSubTitle" class="logo-text-sub">快速查询 · 提高分类准确率</div>
+      </div>
     </div>
 
-    <div id="resultBox" class="result-box">
-      请在上方输入垃圾名称以查看分类结果。
+    <nav class="nav">
+      <button class="nav-item active" data-page="search" id="nav-search">
+        <span class="icon">🔍</span><span id="navSearchText">分类查询</span>
+      </button>
+      <button class="nav-item" data-page="categories" id="nav-categories">
+        <span class="icon">📚</span><span id="navCategoriesText">分类说明</span>
+      </button>
+      <button class="nav-item" data-page="about" id="nav-about">
+        <span class="icon">ℹ️</span><span id="navAboutText">关于网页</span>
+      </button>
+    </nav>
+
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-zh">中文</button>
+      <button class="lang-btn" id="lang-ko">한국어</button>
     </div>
-  </div>
 
-  <!-- 关于页面 -->
-  <div id="pageAbout" class="card hidden">
-    <h2 id="aboutTitle">关于本网页</h2>
-    <p id="aboutText" style="line-height:1.7;">
-      本网页用于帮助用户快速查询生活垃圾所属类别。支持中韩双语切换，同时保证界面简洁、稳定，适合作为课程作业展示。
-    </p>
-  </div>
+    <div class="sidebar-bottom" id="sidebarBottomText">
+      提示：本工具适合作为课程作业或日常练习使用。
+    </div>
+  </aside>
 
-  <!-- 垃圾数据库 -->
-  <script>
-    const trashDB = {
-      "纸箱":"recycle","纸":"recycle","塑料瓶":"recycle","玻璃瓶":"recycle","易拉罐":"recycle",
-      "香蕉皮":"kitchen","果皮":"kitchen","剩饭":"kitchen","骨头":"kitchen",
-      "电池":"hazard","荧光灯":"hazard","过期药品":"hazard",
-      "口罩":"other","湿巾":"other","牙刷":"other","陶瓷":"other"
-    };
+  <!-- 主体 -->
+  <main class="main">
+    <!-- 搜索页 -->
+    <section id="page-search">
+      <header>
+        <div class="page-title">
+          <span id="searchPageTitle">垃圾分类查询</span>
+        </div>
+        <p class="page-subtitle" id="searchPageSubtitle">
+          输入生活中常见垃圾名称，快速查看所属分类，并自动记录查询历史。
+        </p>
+      </header>
 
-    const mapZH = {
-      recycle:"♻️ 可回收物",
-      kitchen:"🥕 厨余垃圾",
-      hazard:"☠️ 有害垃圾",
-      other:"🗑️ 其他垃圾"
-    };
+      <section class="panel" style="margin-top:10px;">
+        <div class="panel-header">
+          <div class="panel-title" id="searchPanelTitle">输入垃圾名称</div>
+          <div class="top-tip" id="searchHintText">支持模糊匹配与自动补全。</div>
+        </div>
 
-    const mapKR = {
-      recycle:"♻️ 재활용품",
-      kitchen:"🥕 음식물 쓰레기",
-      hazard:"☠️ 유해 폐기물",
-      other:"🗑️ 기타 쓰레기"
-    };
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <span class="search-input-icon">🔍</span>
+            <input id="searchInput" class="search-input"
+                   placeholder="例如：香蕉皮、纸箱、电池……" autocomplete="off">
+            <ul id="suggestList" class="suggest-list hidden"></ul>
+          </div>
+          <button id="searchBtn" class="search-btn">搜索</button>
+        </div>
 
-    /* 页面切换 */
-    const tabSearch = document.getElementById("tabSearch");
-    const tabAbout = document.getElementById("tabAbout");
-    const pageSearch = document.getElementById("pageSearch");
-    const pageAbout = document.getElementById("pageAbout");
+        <div class="result-wrapper">
+          <div id="resultCard" class="result-card">
+            <div id="resultEmpty" class="result-empty">
+              请在上方输入垃圾名称以查看分类结果。
+            </div>
+            <div id="resultContent" class="hidden">
+              <div id="resultName" class="result-name"></div>
+              <div class="result-category-label">
+                <span id="resultCategoryIcon">♻️</span>
+                <span id="resultCategoryText"></span>
+              </div>
+              <div id="resultDesc" class="result-desc"></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    function showPage(target){
-      pageSearch.classList.add("hidden");
-      pageAbout.classList.add("hidden");
-      tabSearch.classList.remove("tab-active");
-      tabAbout.classList.remove("tab-active");
+      <section class="panel" style="margin-top:14px;">
+        <div class="history-row">
+          <div class="panel-title" id="historyTitleText">查询历史</div>
+          <button id="historyClearBtn" class="btn-link">清空历史</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+        <div id="historyEmptyText" class="history-empty">
+          暂无历史记录。
+        </div>
+      </section>
+    </section>
 
-      if(target==="search"){
-        pageSearch.classList.remove("hidden");
-        tabSearch.classList.add("tab-active");
-      }else{
-        pageAbout.classList.remove("hidden");
-        tabAbout.classList.add("tab-active");
+    <!-- 分类说明页 -->
+    <section id="page-categories" class="hidden">
+      <header>
+        <div class="page-title">
+          <span id="categoriesPageTitle">分类说明</span>
+        </div>
+        <p class="page-subtitle" id="categoriesPageSubtitle">
+          简要介绍不同垃圾分类的含义与示例，辅助理解查询结果。
+        </p>
+      </header>
+
+      <section class="panel" style="margin-top:10px;">
+        <div class="category-grid">
+          <article class="category-card">
+            <div class="category-title">
+              <span>♻️</span><span id="catRecycleTitle">可回收物</span>
+            </div>
+            <div id="catRecycleDesc" class="category-desc">
+              主要包括适合资源回收再利用的废纸、塑料、玻璃、金属、布料等。
+            </div>
+            <div id="catRecycleExamples" class="category-examples">
+              例如：纸箱、书本、饮料瓶、易拉罐、旧衣物等。
+            </div>
+          </article>
+
+          <article class="category-card">
+            <div class="category-title">
+              <span>🥕</span><span id="catKitchenTitle">厨余垃圾</span>
+            </div>
+            <div id="catKitchenDesc" class="category-desc">
+              指家庭和餐饮中产生的食物残渣与可降解有机物。
+            </div>
+            <div id="catKitchenExamples" class="category-examples">
+              例如：剩饭剩菜、果皮果核、菜叶、骨头、茶叶渣等。
+            </div>
+          </article>
+
+          <article class="category-card">
+            <div class="category-title">
+              <span>☠️</span><span id="catHazardTitle">有害垃圾</span>
+            </div>
+            <div id="catHazardDesc" class="category-desc">
+              含有毒有害物质，对环境或人体健康造成直接或潜在危害。
+            </div>
+            <div id="catHazardExamples" class="category-examples">
+              例如：电池、荧光灯管、过期药品、油漆桶等。
+            </div>
+          </article>
+
+          <article class="category-card">
+            <div class="category-title">
+              <span>🗑️</span><span id="catOtherTitle">其他垃圾</span>
+            </div>
+            <div id="catOtherDesc" class="category-desc">
+              除上述分类以外，难以回收或再利用的日常废弃物。
+            </div>
+            <div id="catOtherExamples" class="category-examples">
+              例如：纸巾、口罩、陶瓷碎片、污染严重的塑料袋等。
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <!-- 关于页 -->
+    <section id="page-about" class="hidden">
+      <header>
+        <div class="page-title">
+          <span id="aboutPageTitle">关于本网页</span>
+        </div>
+        <p class="page-subtitle" id="aboutPageSubtitle">
+          说明网页设计目的、适用场景以及基础使用方法。
+        </p>
+      </header>
+
+      <section class="panel" style="margin-top:10px;">
+        <div id="aboutBody" class="about-body">
+          本网页以“垃圾分类查询”为核心功能，结合中韩双语界面与简洁的卡片式UI，
+          用于展示生活垃圾分类的基础应用场景，适合作为课堂作业或课程展示使用。
+        </div>
+        <ul id="aboutList" class="about-list">
+          <li>在“分类查询”中输入垃圾名称，即可查看所属分类和简要说明。</li>
+          <li>“查询历史”模块会自动记录最近的查询内容，方便反复查看或复习。</li>
+          <li>“分类说明”页面概括不同类别的含义与举例，帮助理解分类规则。</li>
+          <li>右侧支持中文与韩文切换，可用于中韩双语教学或展示。</li>
+        </ul>
+      </section>
+    </section>
+  </main>
+</div>
+
+<script>
+  // ====== 基础数据 ======
+  const trashDB = {
+    "纸箱":"recycle","纸张":"recycle","报纸":"recycle","书本":"recycle",
+    "塑料瓶":"recycle","饮料瓶":"recycle","玻璃瓶":"recycle","易拉罐":"recycle",
+    "铁罐":"recycle","旧衣服":"recycle","铁锅":"recycle",
+
+    "香蕉皮":"kitchen","苹果核":"kitchen","橘子皮":"kitchen","果皮":"kitchen",
+    "剩饭":"kitchen","剩菜":"kitchen","菜叶":"kitchen","骨头":"kitchen",
+    "鸡蛋壳":"kitchen","茶叶渣":"kitchen","咖啡渣":"kitchen",
+
+    "电池":"hazard","纽扣电池":"hazard","荧光灯管":"hazard","灯泡":"hazard",
+    "过期药品":"hazard","药片":"hazard","油漆桶":"hazard","杀虫剂":"hazard",
+
+    "口罩":"other","纸巾":"other","湿巾":"other","一次性筷子":"other",
+    "塑料袋":"other","陶瓷碎片":"other","破碗":"other","牙刷":"other",
+    "笔芯":"other","烟头":"other"
+  };
+
+  const categoryDesc = {
+    recycle:{
+      zh:"适合回收再利用，可进入资源回收体系。",
+      ko:"재활용이 가능하며 자원 회수 체계로 보내는 쓰레기입니다."
+    },
+    kitchen:{
+      zh:"可自然降解，适合进行堆肥或厌氧处理。",
+      ko:"자연 분해가 가능하며 음식물 처리 시설로 보내야 합니다."
+    },
+    hazard:{
+      zh:"含有有毒有害成分，需要单独投放与处理。",
+      ko:"유해 성분이 포함되어 있어 별도의 수거·처리가 필요합니다."
+    },
+    other:{
+      zh:"难以回收或无再利用价值，需要安全填埋或焚烧。",
+      ko:"재활용이 어려워 소각 또는 매립이 필요한 일반 쓰레기입니다."
+    }
+  };
+
+  const i18n = {
+    zh:{
+      appTitle:"生活垃圾分类助手",
+      appSubTitle:"快速查询 · 提高分类准确率",
+      navSearch:"分类查询",
+      navCategories:"分类说明",
+      navAbout:"关于网页",
+      sidebarBottom:"提示：本工具适合作为课程作业或日常练习使用。",
+
+      searchPageTitle:"垃圾分类查询",
+      searchPageSubtitle:"输入生活中常见垃圾名称，快速查看所属分类，并自动记录查询历史。",
+      searchPanelTitle:"输入垃圾名称",
+      searchHint:"支持模糊匹配与自动补全。",
+      searchPlaceholder:"例如：香蕉皮、纸箱、电池……",
+      searchButton:"搜索",
+      resultEmpty:"请在上方输入垃圾名称以查看分类结果。",
+      resultNotFound:name=>`无法找到 <b>${name}</b> 的分类，请检查名称或补充数据库。`,
+      resultCategoryPrefix:"所属分类：",
+      historyTitle:"查询历史",
+      historyClear:"清空历史",
+      historyEmpty:"暂无历史记录。",
+      historyHint:"点击历史记录可再次查询。",
+
+      categoriesPageTitle:"分类说明",
+      categoriesPageSubtitle:"简要介绍不同垃圾分类的含义与示例，辅助理解查询结果。",
+      catRecycleTitle:"可回收物",
+      catRecycleDesc:"主要包括适合资源回收再利用的废纸、塑料、玻璃、金属、布料等。",
+      catRecycleExamples:"例如：纸箱、书本、饮料瓶、易拉罐、旧衣物等。",
+      catKitchenTitle:"厨余垃圾",
+      catKitchenDesc:"指家庭和餐饮中产生的食物残渣与可降解有机物。",
+      catKitchenExamples:"例如：剩饭剩菜、果皮果核、菜叶、骨头、茶叶渣等。",
+      catHazardTitle:"有害垃圾",
+      catHazardDesc:"含有毒有害物质，对环境或人体健康造成直接或潜在危害。",
+      catHazardExamples:"例如：电池、荧光灯管、过期药品、油漆桶等。",
+      catOtherTitle:"其他垃圾",
+      catOtherDesc:"除上述分类以外，难以回收或再利用的日常废弃物。",
+      catOtherExamples:"例如：纸巾、口罩、陶瓷碎片、污染严重的塑料袋等。",
+
+      aboutPageTitle:"关于本网页",
+      aboutPageSubtitle:"说明网页设计目的、适用场景以及基础使用方法。",
+      aboutBody:"本网页以“垃圾分类查询”为核心功能，结合中韩双语界面与简洁的卡片式UI，用于展示生活垃圾分类的基础应用场景，适合作为课堂作业或课程展示使用。",
+      aboutList:[
+        "在“分类查询”中输入垃圾名称，即可查看所属分类和简要说明。",
+        "“查询历史”模块会自动记录最近的查询内容，方便反复查看或复习。",
+        "“分类说明”页面概括不同类别的含义与举例，帮助理解分类规则。",
+        "右侧支持中文与韩文切换，可用于中韩双语教学或展示。"
+      ],
+
+      categoryLabels:{
+        recycle:"♻️ 可回收物",
+        kitchen:"🥕 厨余垃圾",
+        hazard:"☠️ 有害垃圾",
+        other:"🗑️ 其他垃圾"
+      }
+    },
+    ko:{
+      appTitle:"생활 쓰레기 분류 도우미",
+      appSubTitle:"빠른 조회 · 분리배출 정확도 향상",
+      navSearch:"분류 조회",
+      navCategories:"분류 설명",
+      navAbout:"웹페이지 소개",
+      sidebarBottom:"안내: 수업 과제나 일상 연습용으로 활용할 수 있습니다.",
+
+      searchPageTitle:"쓰레기 분류 조회",
+      searchPageSubtitle:"생활 속 쓰레기 이름을 입력하면 해당 분류를 빠르게 확인하고, 조회 기록이 자동으로 저장됩니다.",
+      searchPanelTitle:"쓰레기 이름 입력",
+      searchHint:"간단한 자동 완성과 부분 일치 검색을 지원합니다.",
+      searchPlaceholder:"예: 바나나껍질, 종이상자, 배터리 등",
+      searchButton:"검색",
+      resultEmpty:"위 입력창에 쓰레기 이름을 입력해 분류 결과를 확인하세요.",
+      resultNotFound:name=>`<b>${name}</b> 의 분류 정보를 찾을 수 없습니다. 이름을 다시 확인하거나 데이터베이스를 보완하세요.`,
+      resultCategoryPrefix:"분류:",
+      historyTitle:"조회 기록",
+      historyClear:"기록 삭제",
+      historyEmpty:"아직 조회 기록이 없습니다.",
+      historyHint:"기록을 클릭하면 다시 조회할 수 있습니다.",
+
+      categoriesPageTitle:"분류 설명",
+      categoriesPageSubtitle:"각 쓰레기 분류의 의미와 예시를 간단히 정리하여 조회 결과 이해를 돕습니다.",
+      catRecycleTitle:"재활용품",
+      catRecycleDesc:"종이, 플라스틱, 유리, 금속, 섬유 등 재활용이 가능한 자원을 포함합니다.",
+      catRecycleExamples:"예: 종이상자, 책, 음료수 병, 캔, 헌 옷 등",
+      catKitchenTitle:"음식물 쓰레기",
+      catKitchenDesc:"가정 및 음식점에서 발생하는 음식 찌꺼기와 분해 가능한 유기물입니다.",
+      catKitchenExamples:"예: 남은 밥과 반찬, 과일 껍질과 씨, 채소 잎, 뼈, 찻잎 등",
+      catHazardTitle:"유해 쓰레기",
+      catHazardDesc:"독성 또는 유해 물질을 포함하여 환경과 인체에 위험을 줄 수 있는 쓰레기입니다.",
+      catHazardExamples:"예: 건전지, 형광등, 폐의약품, 페인트 통 등",
+      catOtherTitle:"기타 쓰레기",
+      catOtherDesc:"재활용이 어렵거나 가치가 낮아 일반적으로 소각·매립되는 쓰레기입니다.",
+      catOtherExamples:"예: 휴지, 마스크, 깨진 도자기, 오염이 심한 비닐 등",
+
+      aboutPageTitle:"웹페이지 소개",
+      aboutPageSubtitle:"이 웹페이지의 제작 목적, 활용 장면 및 기본 사용 방법을 설명합니다.",
+      aboutBody:"이 웹페이지는 ‘쓰레기 분류 조회’를 중심 기능으로 하여, 한·중 이중 언어 인터페이스와 단순한 카드형 UI를 결합했습니다. 생활 쓰레기 분류의 기초 활용 장면을 보여주며, 수업 과제나 발표 자료로 사용하기 적합합니다.",
+      aboutList:[
+        "‘분류 조회’ 탭에서 쓰레기 이름을 입력하면 해당 분류와 간단한 설명을 확인할 수 있습니다.",
+        "‘조회 기록’ 모듈은 최근 조회한 항목을 자동으로 저장하여 복습과 재조회에 편리합니다.",
+        "‘분류 설명’ 페이지는 각 분류의 의미와 예시를 정리하여 분리배출 규칙 이해에 도움을 줍니다.",
+        "오른쪽 상단에서 중국어와 한국어를 전환할 수 있어, 한·중 이중 언어 수업이나 발표에 활용할 수 있습니다."
+      ],
+
+      categoryLabels:{
+        recycle:"♻️ 재활용품",
+        kitchen:"🥕 음식물 쓰레기",
+        hazard:"☠️ 유해 쓰레기",
+        other:"🗑️ 기타 쓰레기"
       }
     }
+  };
 
-    tabSearch.onclick = ()=>showPage("search");
-    tabAbout.onclick = ()=>showPage("about");
+  let currentLang = "zh";
+  const STORAGE_KEY = "trash_search_history_v1";
 
-    /* 搜索功能 */
-    const searchInput = document.getElementById("searchInput");
-    const searchBtn = document.getElementById("searchBtn");
-    const resultBox = document.getElementById("resultBox");
+  // ====== DOM ======
+  const navButtons = document.querySelectorAll(".nav-item");
+  const pages = {
+    search:document.getElementById("page-search"),
+    categories:document.getElementById("page-categories"),
+    about:document.getElementById("page-about")
+  };
 
-    let currentLang="zh";
+  const appTitleEl = document.getElementById("appTitle");
+  const appSubTitleEl = document.getElementById("appSubTitle");
+  const sidebarBottomTextEl = document.getElementById("sidebarBottomText");
 
-    function search(){
-      const name = searchInput.value.trim();
-      if(!name){
-        resultBox.innerHTML = currentLang==="zh" ? "请输入垃圾名称。" : "쓰레기 이름을 입력하세요.";
-        return;
-      }
+  const navSearchTextEl = document.getElementById("navSearchText");
+  const navCategoriesTextEl = document.getElementById("navCategoriesText");
+  const navAboutTextEl = document.getElementById("navAboutText");
 
-      if(!trashDB[name]){
-        resultBox.innerHTML = currentLang==="zh"
-          ? `无法找到 <b>${name}</b> 的分类。`
-          : `<b>${name}</b> 의 분류 정보를 찾을 수 없습니다.`;
-        return;
-      }
+  const searchPageTitleEl = document.getElementById("searchPageTitle");
+  const searchPageSubtitleEl = document.getElementById("searchPageSubtitle");
+  const searchPanelTitleEl = document.getElementById("searchPanelTitle");
+  const searchHintTextEl = document.getElementById("searchHintText");
+  const searchInputEl = document.getElementById("searchInput");
+  const searchBtnEl = document.getElementById("searchBtn");
+  const suggestListEl = document.getElementById("suggestList");
 
-      const cat = trashDB[name];
+  const resultEmptyEl = document.getElementById("resultEmpty");
+  const resultContentEl = document.getElementById("resultContent");
+  const resultNameEl = document.getElementById("resultName");
+  const resultCategoryIconEl = document.getElementById("resultCategoryIcon");
+  const resultCategoryTextEl = document.getElementById("resultCategoryText");
+  const resultDescEl = document.getElementById("resultDesc");
 
-      resultBox.innerHTML = currentLang==="zh"
-        ? `【${name}】属于：<br><div style="font-size:22px;margin-top:6px;">${mapZH[cat]}</div>`
-        : `【${name}】의 분류는:<br><div style="font-size:22px;margin-top:6px;">${mapKR[cat]}</div>`;
+  const historyTitleTextEl = document.getElementById("historyTitleText");
+  const historyClearBtnEl = document.getElementById("historyClearBtn");
+  const historyListEl = document.getElementById("historyList");
+  const historyEmptyTextEl = document.getElementById("historyEmptyText");
+
+  const categoriesPageTitleEl = document.getElementById("categoriesPageTitle");
+  const categoriesPageSubtitleEl = document.getElementById("categoriesPageSubtitle");
+  const catRecycleTitleEl = document.getElementById("catRecycleTitle");
+  const catRecycleDescEl = document.getElementById("catRecycleDesc");
+  const catRecycleExamplesEl = document.getElementById("catRecycleExamples");
+  const catKitchenTitleEl = document.getElementById("catKitchenTitle");
+  const catKitchenDescEl = document.getElementById("catKitchenDesc");
+  const catKitchenExamplesEl = document.getElementById("catKitchenExamples");
+  const catHazardTitleEl = document.getElementById("catHazardTitle");
+  const catHazardDescEl = document.getElementById("catHazardDesc");
+  const catHazardExamplesEl = document.getElementById("catHazardExamples");
+  const catOtherTitleEl = document.getElementById("catOtherTitle");
+  const catOtherDescEl = document.getElementById("catOtherDesc");
+  const catOtherExamplesEl = document.getElementById("catOtherExamples");
+
+  const aboutPageTitleEl = document.getElementById("aboutPageTitle");
+  const aboutPageSubtitleEl = document.getElementById("aboutPageSubtitle");
+  const aboutBodyEl = document.getElementById("aboutBody");
+  const aboutListEl = document.getElementById("aboutList");
+
+  const langZhBtn = document.getElementById("lang-zh");
+  const langKoBtn = document.getElementById("lang-ko");
+
+  // ====== 页面切换 ======
+  function switchPage(pageKey){
+    Object.keys(pages).forEach(k=>{
+      pages[k].classList.toggle("hidden",k!==pageKey);
+    });
+    navButtons.forEach(btn=>{
+      btn.classList.toggle("active",btn.dataset.page===pageKey);
+    });
+  }
+  navButtons.forEach(btn=>{
+    btn.addEventListener("click",()=>switchPage(btn.dataset.page));
+  });
+
+  // ====== 历史记录 ======
+  function loadHistory(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr)?arr:[];
+    }catch(e){
+      return [];
     }
-
-    searchBtn.onclick = search;
-    searchInput.onkeydown = e => e.key==="Enter" && search();
-
-    /* 语言切换 */
-    const zhBtn = document.getElementById("langZH");
-    const krBtn = document.getElementById("langKR");
-
-    zhBtn.onclick = ()=>setLang("zh");
-    krBtn.onclick = ()=>setLang("kr");
-
-    function setLang(lang){
-      currentLang = lang;
-
-      zhBtn.classList.toggle("lang-active", lang==="zh");
-      krBtn.classList.toggle("lang-active", lang==="kr");
-
-      if(lang==="zh"){
-        document.getElementById("titleText").textContent = "📦 生活垃圾分类助手";
-        tabSearch.textContent = "查询分类";
-        tabAbout.textContent = "关于网页";
-        searchInput.placeholder = "请输入垃圾名称，例如：香蕉皮、纸盒、电池…";
-        document.getElementById("aboutTitle").textContent = "关于本网页";
-        document.getElementById("aboutText").textContent = "本网页用于帮助用户快速查询生活垃圾所属类别。支持中韩双语切换，同时保证界面简洁、稳定，适合作为课程作业展示。";
-      }else{
-        document.getElementById("titleText").textContent = "📦 생활 쓰레기 분류 도우미";
-        tabSearch.textContent = "분류 조회";
-        tabAbout.textContent = "웹페이지 소개";
-        searchInput.placeholder = "쓰레기 이름을 입력하세요. 예: 바나나껍질, 종이상자, 배터리…";
-        document.getElementById("aboutTitle").textContent = "웹페이지 소개";
-        document.getElementById("aboutText").textContent = "이 웹페이지는 생활 쓰레기의 분류를 빠르게 조회할 수 있도록 제작되었습니다. 한중 언어 전환을 지원하며 간단하고 안정적인 UI로 구성되어 과제 제출에 적합합니다.";
-      }
+  }
+  function saveHistory(list){
+    try{
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(list));
+    }catch(e){}
+  }
+  function renderHistory(){
+    const list = loadHistory();
+    historyListEl.innerHTML = "";
+    if(list.length===0){
+      historyEmptyTextEl.classList.remove("hidden");
+      return;
     }
-  </script>
+    historyEmptyTextEl.classList.add("hidden");
+    list.slice(0,12).forEach(name=>{
+      const btn = document.createElement("button");
+      btn.className = "history-item";
+      btn.textContent = name;
+      btn.addEventListener("click",()=>{
+        searchInputEl.value = name;
+        performSearch();
+      });
+      historyListEl.appendChild(btn);
+    });
+  }
+  function addHistory(name){
+    if(!name) return;
+    const list = loadHistory();
+    const filtered = list.filter(n=>n!==name);
+    filtered.unshift(name);
+    saveHistory(filtered.slice(0,30));
+    renderHistory();
+  }
 
+  // ====== 自动补全 ======
+  const trashNames = Object.keys(trashDB);
+  function updateSuggestList(){
+    const keyword = searchInputEl.value.trim();
+    if(!keyword){
+      suggestListEl.classList.add("hidden");
+      suggestListEl.innerHTML = "";
+      return;
+    }
+    const lower = keyword.toLowerCase();
+    const matches = trashNames.filter(n=>n.toLowerCase().includes(lower));
+    suggestListEl.innerHTML = "";
+    if(matches.length===0){
+      suggestListEl.classList.add("hidden");
+      return;
+    }
+    matches.slice(0,12).forEach(name=>{
+      const li = document.createElement("li");
+      li.textContent = name;
+      li.addEventListener("click",()=>{
+        searchInputEl.value = name;
+        suggestListEl.classList.add("hidden");
+        performSearch();
+      });
+      suggestListEl.appendChild(li);
+    });
+    suggestListEl.classList.remove("hidden");
+  }
+
+  searchInputEl.addEventListener("input",updateSuggestList);
+  document.addEventListener("click",e=>{
+    if(!searchInputEl.parentElement.contains(e.target)){
+      suggestListEl.classList.add("hidden");
+    }
+  });
+
+  // ====== 搜索逻辑 ======
+  function renderResultNotFound(name){
+    const t = i18n[currentLang];
+    resultEmptyEl.innerHTML = t.resultNotFound(name);
+    resultEmptyEl.classList.remove("hidden");
+    resultContentEl.classList.add("hidden");
+  }
+  function renderResult(name, cat){
+    const t = i18n[currentLang];
+    const labelMap = t.categoryLabels;
+    resultNameEl.textContent = name;
+    resultCategoryIconEl.textContent = labelMap[cat].split(" ")[0];
+    resultCategoryTextEl.textContent = labelMap[cat];
+    resultDescEl.textContent = categoryDesc[cat][currentLang];
+    resultEmptyEl.classList.add("hidden");
+    resultContentEl.classList.remove("hidden");
+  }
+
+  function performSearch(){
+    const name = searchInputEl.value.trim();
+    const t = i18n[currentLang];
+    if(!name){
+      resultEmptyEl.textContent = currentLang==="zh" ?
+        "请输入垃圾名称。" : "쓰레기 이름을 입력하세요.";
+      resultEmptyEl.classList.remove("hidden");
+      resultContentEl.classList.add("hidden");
+      return;
+    }
+    addHistory(name);
+    const cat = trashDB[name];
+    if(!cat){
+      renderResultNotFound(name);
+    }else{
+      renderResult(name,cat);
+    }
+  }
+
+  document.getElementById("searchBtn").addEventListener("click",performSearch);
+  searchInputEl.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  historyClearBtnEl.addEventListener("click",()=>{
+    saveHistory([]);
+    renderHistory();
+  });
+
+  // ====== 语言切换 ======
+  function applyLanguage(lang){
+    currentLang = lang;
+    const t = i18n[lang];
+
+    langZhBtn.classList.toggle("active",lang==="zh");
+    langKoBtn.classList.toggle("active",lang==="ko");
+
+    appTitleEl.textContent = t.appTitle;
+    appSubTitleEl.textContent = t.appSubTitle;
+    sidebarBottomTextEl.textContent = t.sidebarBottom;
+
+    navSearchTextEl.textContent = t.navSearch;
+    navCategoriesTextEl.textContent = t.navCategories;
+    navAboutTextEl.textContent = t.navAbout;
+
+    searchPageTitleEl.textContent = t.searchPageTitle;
+    searchPageSubtitleEl.textContent = t.searchPageSubtitle;
+    searchPanelTitleEl.textContent = t.searchPanelTitle;
+    searchHintTextEl.textContent = t.searchHint;
+    searchInputEl.placeholder = t.searchPlaceholder;
+    searchBtnEl.textContent = t.searchButton;
+    resultEmptyEl.textContent = t.resultEmpty;
+
+    historyTitleTextEl.textContent = t.historyTitle;
+    historyClearBtnEl.textContent = t.historyClear;
+    historyEmptyTextEl.textContent = t.historyEmpty;
+
+    categoriesPageTitleEl.textContent = t.categoriesPageTitle;
+    categoriesPageSubtitleEl.textContent = t.categoriesPageSubtitle;
+    catRecycleTitleEl.textContent = t.catRecycleTitle;
+    catRecycleDescEl.textContent = t.catRecycleDesc;
+    catRecycleExamplesEl.textContent = t.catRecycleExamples;
+    catKitchenTitleEl.textContent = t.catKitchenTitle;
+    catKitchenDescEl.textContent = t.catKitchenDesc;
+    catKitchenExamplesEl.textContent = t.catKitchenExamples;
+    catHazardTitleEl.textContent = t.catHazardTitle;
+    catHazardDescEl.textContent = t.catHazardDesc;
+    catHazardExamplesEl.textContent = t.catHazardExamples;
+    catOtherTitleEl.textContent = t.catOtherTitle;
+    catOtherDescEl.textContent = t.catOtherDesc;
+    catOtherExamplesEl.textContent = t.catOtherExamples;
+
+    aboutPageTitleEl.textContent = t.aboutPageTitle;
+    aboutPageSubtitleEl.textContent = t.aboutPageSubtitle;
+    aboutBodyEl.textContent = t.aboutBody;
+    aboutListEl.innerHTML = "";
+    t.aboutList.forEach(item=>{
+      const li = document.createElement("li");
+      li.textContent = item;
+      aboutListEl.appendChild(li);
+    });
+
+    // 如果当前有结果，重新渲染一下说明文本
+    if(!resultContentEl.classList.contains("hidden")){
+      const name = resultNameEl.textContent;
+      const cat = Object.keys(trashDB).includes(name)?trashDB[name]:null;
+      if(cat){
+        renderResult(name,cat);
+      }
+    }else{
+      resultEmptyEl.textContent = t.resultEmpty;
+    }
+  }
+
+  langZhBtn.addEventListener("click",()=>applyLanguage("zh"));
+  langKoBtn.addEventListener("click",()=>applyLanguage("ko"));
+
+  // 初始化
+  applyLanguage("zh");
+  renderHistory();
+  switchPage("search");
+</script>
 </body>
 </html>
